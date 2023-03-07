@@ -1,3 +1,5 @@
+import random
+
 from GlobalStuff import increment_str, INCREMENT_START_CHAR
 
 DEFAULT_ID_LENGTH = 8  # Default Length of the id
@@ -29,8 +31,14 @@ class ID:
 
     def __str__(self):
         return f"ID: {self.value}"
+    def getRandom(self,top):
+        return str(random.randint(0,top))
 
 
 if __name__ == '__main__':
-    last = ID(value="12345")
-    print(last.value)
+    last=""
+    for i in range(14):
+        id = ID("1%")
+        last = id.value
+        print(id)
+
