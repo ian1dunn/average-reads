@@ -9,7 +9,7 @@ from ID import ID
 
 
 class Attributes(Enum):
-    cid = "cid"
+    aid = "aid"
     bid = "bid"
 
 
@@ -23,27 +23,27 @@ temp_Contains = set()  # This will be deleted once the database is up
 
 def get_IDS():
     return str(random.randint(0,10000)),str(random.randint(0,10000))
-class Editor:
+class AppealToBook:
     """
     Class for a user which contains all their basic information.
     """
     TABLE_NAME = CONTAINS_TABLE_NAME
 
-    def __init__(self, cid: ID,bid: ID):
-        self.cid = cid
+    def __init__(self, aid: ID,bid: ID):
+        self.aid = aid
         self.bid = bid
 
     @classmethod
     def generate_random(cls):
-        cid,bid = get_IDS()
-        return Editor(ID(cid), ID(bid))
+        aid, bid = get_IDS()
+        return AppealToBook(ID(aid), ID(bid))
 
     def __str__(self):
-        return f"{str(self.cid), str(self.bid)}"
+        return f"{str(self.aid), str(self.bid)}"
 
 
 if __name__ == '__main__':
     last = ""
     for i in range(10000):
-        editor = Editor.generate_random()
-        print(editor)
+        appealToBook = AppealToBook.generate_random()
+        print(appealToBook)

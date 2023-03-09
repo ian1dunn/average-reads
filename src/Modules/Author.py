@@ -36,7 +36,7 @@ class Author:
     @classmethod
     def generate_random(cls):
         cid,bid = get_IDS()
-        return Author(ID(cid), ID(bid), )
+        return Author(ID(cid), ID(bid))
 
     def __str__(self):
         return f"{str(self.cid), str(self.bid)}"
