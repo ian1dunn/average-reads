@@ -37,8 +37,8 @@ class ID:
 
 if __name__ == '__main__':
     last=""
-    for i in range(14):
-        id = ID("1%")
+    for i in range(12424):
+        id = ID(last)
         last = id.value
         print(id)
 
