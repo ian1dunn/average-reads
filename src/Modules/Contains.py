@@ -41,6 +41,9 @@ class Contains:
     def __str__(self):
         return f"{str(self.collection_id), str(self.bid)}"
 
+    def __iter__(self):
+        return iter([str(self.collection_id), str(self.bid)])
+
 
 if __name__ == '__main__':
     last = ""

@@ -45,6 +45,9 @@ class Rating:
     def __str__(self):
         return f"{str(self.uid), str(self.bid), self.rating}"
 
+    def __iter__(self):
+        return iter([str(self.uid), str(self.bid), self.rating])
+
 
 if __name__ == '__main__':
     last = ""

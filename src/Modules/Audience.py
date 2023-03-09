@@ -17,7 +17,7 @@ class Attributes(Enum):
 
 
 CONTAINS_TABLE_NAME = "Author"
-CONTAINS_SELECTION_CONDITION = f"WHERE {Attributes.cid.value} LIKE "
+CONTAINS_SELECTION_CONDITION = f"WHERE {Attributes.aid.value} LIKE "
 
 
 temp_Contains = set()  # This will be deleted once the database is up
@@ -48,6 +48,8 @@ class Audience:
 
     def __str__(self):
         return f"{str(self.aid), self.name, str(self.age)}"
+    def __iter__(self):
+        return iter([str(self.aid), self.name, str(self.age)])
 
 
 if __name__ == '__main__':

@@ -66,6 +66,9 @@ class Book:
     def __str__(self):
         return f"{str(self.id), self.title, self.pages, self.release_date}"
 
+    def __iter__(self):
+        return iter([str(self.id), self.title, self.pages, self.release_date])
+
 
 if __name__ == '__main__':
     last = ""

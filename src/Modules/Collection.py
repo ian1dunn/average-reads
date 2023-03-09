@@ -44,6 +44,9 @@ class Collection:
     def __str__(self):
         return f"{str(self.collection_id), str(self.uid), self.collection_name}"
 
+    def __iter__(self):
+        return iter([str(self.collection_id), str(self.uid), self.collection_name])
+
 
 if __name__ == '__main__':
     last = ""

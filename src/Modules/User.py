@@ -108,6 +108,9 @@ class User:
     def __str__(self):
         return f"{str(self.id), self.username, self.password, self.f_name, self.l_name, self.email, self.creation_date, self.last_access_date}"
 
+    def __iter__(self):
+        return iter([str(self.id), self.username, self.password, self.f_name, self.l_name, self.email, self.creation_date, self.last_access_date])
+
 
 if __name__ == '__main__':
     last = ""

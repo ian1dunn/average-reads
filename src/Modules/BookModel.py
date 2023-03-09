@@ -16,7 +16,7 @@ class Attributes(Enum):
 
 
 CONTAINS_TABLE_NAME = "Author"
-CONTAINS_SELECTION_CONDITION = f"WHERE {Attributes.cid.value} LIKE "
+CONTAINS_SELECTION_CONDITION = f"WHERE {Attributes.bid.value} LIKE "
 
 
 temp_Contains = set()  # This will be deleted once the database is up
@@ -40,6 +40,9 @@ class BookModel:
 
     def __str__(self):
         return f"{str(self.bid), str(self.ctid)}"
+
+    def __iter__(self):
+        return iter([str(self.bid), str(self.ctid)])
 
 
 if __name__ == '__main__':

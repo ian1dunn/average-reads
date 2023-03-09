@@ -44,6 +44,9 @@ class Contributor:
     def __str__(self):
         return f"{str(self.cid), self.c_name}"
 
+    def __iter__(self):
+        return iter([str(self.cid), self.c_name])
+
 
 if __name__ == '__main__':
     last = ""

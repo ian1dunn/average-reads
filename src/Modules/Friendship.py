@@ -45,6 +45,9 @@ class Friendship:
     def __str__(self):
         return f"{str(self.follower_uid), str(self.followee_uid), self.date_friended}"
 
+    def __iter__(self):
+        return iter([str(self.follower_uid), str(self.followee_uid), self.date_friended])
+
 
 if __name__ == '__main__':
     last = ""

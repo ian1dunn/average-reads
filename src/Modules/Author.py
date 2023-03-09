@@ -41,6 +41,9 @@ class Author:
     def __str__(self):
         return f"{str(self.cid), str(self.bid)}"
 
+    def __iter__(self):
+        return iter([str(self.cid), str(self.bid)])
+
 
 if __name__ == '__main__':
     last = ""

@@ -64,6 +64,9 @@ class Reading_Session:
     def __str__(self):
         return f"{str(self.id),str(self.uid),str(self.bid), self.session_start, self.session_end, self.start_page,self.end_page}"
 
+    def __iter__(self):
+        return iter([str(self.id),str(self.uid),str(self.bid), self.session_start, self.session_end, self.start_page,self.end_page])
+
 
 if __name__ == '__main__':
     for i in range(10000):
