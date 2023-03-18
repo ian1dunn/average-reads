@@ -52,12 +52,14 @@ class Book:
     """
     TABLE_NAME = BOOK_TABLE_NAME
 
-    def __init__(self, bid: ID, title: str, pages: str, release_date: datetime):
+    def __init__(self, bid: ID, title: str, pages: int, release_date: datetime):
         self.id = bid
         self.title = title
         self.pages = pages
         self.release_date = release_date
+        #Should I create within the init or as a seperate create probably within init
 
+    
     @classmethod
     def generate_random(cls, last_bid: str | None):
         titles = generate_title_temporary(random_Title())
