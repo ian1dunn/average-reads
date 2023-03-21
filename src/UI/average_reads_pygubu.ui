@@ -609,7 +609,7 @@
                 <child>
                   <object class="ttk.OptionMenu" id="optionmenu5">
                     <property name="value">Title</property>
-                    <property name="values">Title,Author,Publisher,Genre,Release Year,Friend Email</property>
+                    <property name="values">Title,Author,Publisher,Genre,Release Year</property>
                     <property name="variable">string:search_sort_var</property>
                     <layout manager="pack">
                       <property name="fill">y</property>
