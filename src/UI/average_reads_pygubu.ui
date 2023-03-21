@@ -1,0 +1,1432 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.3">
+  <object class="tk.Toplevel" id="toplevel1">
+    <property name="background">#0d0f14</property>
+    <property name="height">1080</property>
+    <property name="title" translatable="yes">Average-Reads</property>
+    <property name="width">1920</property>
+    <containerlayout manager="pack">
+      <property name="anchor">center</property>
+      <property name="propagate">False</property>
+    </containerlayout>
+    <child>
+      <object class="ttk.Frame" id="prompt_frame" named="True">
+        <property name="style">Default_Background.TFrame</property>
+        <layout manager="place">
+          <property name="anchor">nw</property>
+          <property name="relheight">1.0</property>
+          <property name="relwidth">1.0</property>
+          <property name="x">0</property>
+          <property name="y">0</property>
+        </layout>
+        <containerlayout manager="grid">
+          <property name="anchor">center</property>
+        </containerlayout>
+        <child>
+          <object class="ttk.Frame" id="sign_in_frame" named="True">
+            <property name="height">290</property>
+            <property name="relief">raised</property>
+            <property name="style">Inner_1.TFrame</property>
+            <property name="width">400</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="row">0</property>
+            </layout>
+            <child>
+              <object class="ttk.Frame" id="frame5">
+                <property name="height">200</property>
+                <property name="style">Inner_1.TFrame</property>
+                <property name="width">300</property>
+                <layout manager="pack">
+                  <property name="expand">true</property>
+                  <property name="fill">both</property>
+                  <property name="padx">25</property>
+                  <property name="pady">25</property>
+                  <property name="side">top</property>
+                </layout>
+                <child>
+                  <object class="ttk.Frame" id="frame3">
+                    <property name="height">200</property>
+                    <property name="style">Inner_1.TFrame</property>
+                    <property name="width">200</property>
+                    <layout manager="pack">
+                      <property name="expand">true</property>
+                      <property name="fill">x</property>
+                      <property name="side">left</property>
+                    </layout>
+                    <child>
+                      <object class="ttk.Label" id="label1">
+                        <property name="style">Header.TLabel</property>
+                        <property name="text" translatable="yes">Sign In</property>
+                        <layout manager="pack">
+                          <property name="fill">both</property>
+                          <property name="side">top</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Separator" id="separator1">
+                        <property name="orient">horizontal</property>
+                        <layout manager="pack">
+                          <property name="fill">x</property>
+                          <property name="side">top</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Frame" id="si_email_frame" named="True">
+                        <property name="height">65</property>
+                        <property name="style">Inner_1.TFrame</property>
+                        <property name="width">200</property>
+                        <layout manager="pack">
+                          <property name="fill">x</property>
+                          <property name="side">top</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Frame" id="frame1">
+                            <property name="height">10</property>
+                            <property name="style">Inner_1.TFrame</property>
+                            <property name="width">375</property>
+                            <layout manager="pack">
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="label2">
+                            <property name="style">Header1.TLabel</property>
+                            <property name="text" translatable="yes">Email</property>
+                            <layout manager="pack">
+                              <property name="anchor">nw</property>
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Entry" id="entry7">
+                            <property name="font">{Cascadia Code SemiBold} 8 {}</property>
+                            <property name="style">Normal_Entry.TEntry</property>
+                            <property name="textvariable">string:email_var</property>
+                            <layout manager="pack">
+                              <property name="anchor">nw</property>
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="label5">
+                            <property name="class_">errorlabel</property>
+                            <property name="font">{Cascadia Code SemiLight} 8 {}</property>
+                            <property name="foreground">#ff8040</property>
+                            <property name="style">Custom_Header.TLabel</property>
+                            <property name="text" translatable="yes">Please enter a valid email address</property>
+                            <property name="textvariable">string:email_hint</property>
+                            <layout manager="pack">
+                              <property name="anchor">nw</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Frame" id="si_pw_frame" named="True">
+                        <property name="height">75</property>
+                        <property name="style">Inner_1.TFrame</property>
+                        <property name="width">200</property>
+                        <layout manager="pack">
+                          <property name="fill">x</property>
+                          <property name="side">top</property>
+                        </layout>
+                        <containerlayout manager="pack">
+                          <property name="propagate">False</property>
+                        </containerlayout>
+                        <child>
+                          <object class="ttk.Label" id="label8">
+                            <property name="style">Header1.TLabel</property>
+                            <property name="text" translatable="yes">Password</property>
+                            <layout manager="pack">
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Entry" id="entry6">
+                            <property name="font">{Cascadia Code SemiBold} 8 {}</property>
+                            <property name="show">•</property>
+                            <property name="style">Normal_Entry.TEntry</property>
+                            <property name="textvariable">string:password_var</property>
+                            <layout manager="pack">
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="label9">
+                            <property name="class_">errorlabel</property>
+                            <property name="font">{Cascadia Code SemiLight} 8 {}</property>
+                            <property name="foreground">#ff8040</property>
+                            <property name="style">Custom_Header.TLabel</property>
+                            <property name="text" translatable="yes">Your password must contain at least 1 special character.</property>
+                            <property name="textvariable">string:password_hint</property>
+                            <layout manager="pack">
+                              <property name="anchor">nw</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Button" id="sign_in_btn" named="True">
+                        <property name="command" type="command" cbtype="simple">request_sign_in</property>
+                        <property name="style">Main_Btn.TButton</property>
+                        <property name="text" translatable="yes">Sign In</property>
+                        <layout manager="pack">
+                          <property name="fill">x</property>
+                          <property name="side">top</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Checkbutton" id="checkbutton3">
+                        <property name="text" translatable="yes">Remember me</property>
+                        <layout manager="pack">
+                          <property name="pady">5</property>
+                          <property name="side">left</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Button" id="show_sign_up" named="True">
+                        <property name="command" type="command" cbtype="with_wid">show_something_else</property>
+                        <property name="style">Secondary_Btn.TButton</property>
+                        <property name="text" translatable="yes">Sign Up</property>
+                        <layout manager="pack">
+                          <property name="pady">5</property>
+                          <property name="side">right</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="sign_up_frame" named="True">
+            <property name="height">400</property>
+            <property name="relief">raised</property>
+            <property name="style">Inner_1.TFrame</property>
+            <property name="width">300</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="row">0</property>
+            </layout>
+            <child>
+              <object class="ttk.Frame" id="frame12">
+                <property name="height">200</property>
+                <property name="style">Inner_1.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="pack">
+                  <property name="expand">true</property>
+                  <property name="fill">both</property>
+                  <property name="padx">25</property>
+                  <property name="pady">25</property>
+                  <property name="side">top</property>
+                </layout>
+                <child>
+                  <object class="ttk.Frame" id="frame13">
+                    <property name="height">200</property>
+                    <property name="style">Inner_1.TFrame</property>
+                    <property name="width">200</property>
+                    <layout manager="pack">
+                      <property name="expand">true</property>
+                      <property name="fill">x</property>
+                      <property name="side">left</property>
+                    </layout>
+                    <child>
+                      <object class="ttk.Label" id="label3">
+                        <property name="style">Header.TLabel</property>
+                        <property name="text" translatable="yes">Sign Up</property>
+                        <layout manager="pack">
+                          <property name="fill">both</property>
+                          <property name="side">top</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Separator" id="separator2">
+                        <property name="orient">horizontal</property>
+                        <layout manager="pack">
+                          <property name="fill">x</property>
+                          <property name="side">top</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Frame" id="su_fn_frame" named="True">
+                        <property name="height">65</property>
+                        <property name="style">Inner_1.TFrame</property>
+                        <property name="width">200</property>
+                        <layout manager="pack">
+                          <property name="fill">x</property>
+                          <property name="side">top</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Frame" id="frame20">
+                            <property name="height">10</property>
+                            <property name="style">Inner_1.TFrame</property>
+                            <property name="width">250</property>
+                            <layout manager="pack">
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="label13">
+                            <property name="style">Header1.TLabel</property>
+                            <property name="text" translatable="yes">First Name</property>
+                            <layout manager="pack">
+                              <property name="anchor">nw</property>
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Entry" id="entry4">
+                            <property name="font">{Cascadia Code SemiBold} 8 {}</property>
+                            <property name="style">Normal_Entry.TEntry</property>
+                            <property name="textvariable">string:first_name_var</property>
+                            <layout manager="pack">
+                              <property name="anchor">nw</property>
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="label21">
+                            <property name="class_">errorlabel</property>
+                            <property name="font">{Cascadia Code SemiLight} 8 {}</property>
+                            <property name="foreground">#ff8040</property>
+                            <property name="style">Custom_Header.TLabel</property>
+                            <property name="text" translatable="yes">Please enter a first name.</property>
+                            <layout manager="pack">
+                              <property name="anchor">nw</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Frame" id="su_ln_frame" named="True">
+                        <property name="height">65</property>
+                        <property name="style">Inner_1.TFrame</property>
+                        <property name="width">200</property>
+                        <layout manager="pack">
+                          <property name="fill">x</property>
+                          <property name="side">top</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Label" id="label17">
+                            <property name="style">Header1.TLabel</property>
+                            <property name="text" translatable="yes">Last Name</property>
+                            <layout manager="pack">
+                              <property name="anchor">nw</property>
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Entry" id="entry8">
+                            <property name="font">{Cascadia Code SemiBold} 8 {}</property>
+                            <property name="style">Normal_Entry.TEntry</property>
+                            <property name="textvariable">string:last_name_var</property>
+                            <layout manager="pack">
+                              <property name="anchor">nw</property>
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="label22">
+                            <property name="class_">errorlabel</property>
+                            <property name="font">{Cascadia Code SemiLight} 8 {}</property>
+                            <property name="foreground">#ff8040</property>
+                            <property name="style">Custom_Header.TLabel</property>
+                            <property name="text" translatable="yes">Please enter a last name.</property>
+                            <layout manager="pack">
+                              <property name="anchor">nw</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Frame" id="su_email_frame" named="True">
+                        <property name="height">65</property>
+                        <property name="style">Inner_1.TFrame</property>
+                        <property name="width">200</property>
+                        <layout manager="pack">
+                          <property name="fill">x</property>
+                          <property name="side">top</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Label" id="label4">
+                            <property name="style">Header1.TLabel</property>
+                            <property name="text" translatable="yes">Email</property>
+                            <layout manager="pack">
+                              <property name="anchor">nw</property>
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Entry" id="entry1">
+                            <property name="font">{Cascadia Code SemiBold} 8 {}</property>
+                            <property name="style">Normal_Entry.TEntry</property>
+                            <property name="textvariable">string:email_var</property>
+                            <layout manager="pack">
+                              <property name="anchor">nw</property>
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="label6">
+                            <property name="class_">errorlabel</property>
+                            <property name="font">{Cascadia Code SemiLight} 8 {}</property>
+                            <property name="foreground">#ff8040</property>
+                            <property name="style">Custom_Header.TLabel</property>
+                            <property name="text" translatable="yes">Please enter a valid email address.</property>
+                            <property name="textvariable">string:email_hint</property>
+                            <layout manager="pack">
+                              <property name="anchor">nw</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Frame" id="su_un_frame" named="True">
+                        <property name="height">65</property>
+                        <property name="style">Inner_1.TFrame</property>
+                        <property name="width">200</property>
+                        <layout manager="pack">
+                          <property name="fill">x</property>
+                          <property name="side">top</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Label" id="label19">
+                            <property name="style">Header1.TLabel</property>
+                            <property name="text" translatable="yes">Username</property>
+                            <layout manager="pack">
+                              <property name="anchor">nw</property>
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Entry" id="entry9">
+                            <property name="font">{Cascadia Code SemiBold} 8 {}</property>
+                            <property name="style">Normal_Entry.TEntry</property>
+                            <property name="textvariable">string:username_var</property>
+                            <layout manager="pack">
+                              <property name="anchor">nw</property>
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="label20">
+                            <property name="class_">errorlabel</property>
+                            <property name="font">{Cascadia Code SemiLight} 8 {}</property>
+                            <property name="foreground">#ff8040</property>
+                            <property name="style">Custom_Header.TLabel</property>
+                            <property name="text" translatable="yes">This username is taken, or is invalid.</property>
+                            <layout manager="pack">
+                              <property name="anchor">nw</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Frame" id="su_pw_frame" named="True">
+                        <property name="height">75</property>
+                        <property name="style">Inner_1.TFrame</property>
+                        <property name="width">200</property>
+                        <layout manager="pack">
+                          <property name="fill">x</property>
+                          <property name="side">top</property>
+                        </layout>
+                        <containerlayout manager="pack">
+                          <property name="propagate">False</property>
+                        </containerlayout>
+                        <child>
+                          <object class="ttk.Label" id="label7">
+                            <property name="style">Header1.TLabel</property>
+                            <property name="text" translatable="yes">Password</property>
+                            <layout manager="pack">
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Entry" id="entry2">
+                            <property name="font">{Cascadia Code SemiBold} 8 {}</property>
+                            <property name="show">•</property>
+                            <property name="style">Normal_Entry.TEntry</property>
+                            <property name="textvariable">string:password_var</property>
+                            <layout manager="pack">
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="label10">
+                            <property name="class_">errorlabel</property>
+                            <property name="font">{Cascadia Code SemiLight} 8 {}</property>
+                            <property name="foreground">#ff8040</property>
+                            <property name="style">Custom_Header.TLabel</property>
+                            <property name="text" translatable="yes">Your password must contain at least 1 special character.</property>
+                            <property name="textvariable">string:password_hint</property>
+                            <property name="width">0</property>
+                            <property name="wraplength">275</property>
+                            <layout manager="pack">
+                              <property name="anchor">nw</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Button" id="button1" named="True">
+                        <property name="command" type="command" cbtype="simple">request_sign_up</property>
+                        <property name="style">Main_Btn.TButton</property>
+                        <property name="text" translatable="yes">Sign Up</property>
+                        <layout manager="pack">
+                          <property name="fill">x</property>
+                          <property name="side">top</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Checkbutton" id="checkbutton1">
+                        <property name="text" translatable="yes">Remember me</property>
+                        <layout manager="pack">
+                          <property name="pady">5</property>
+                          <property name="side">left</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Button" id="show_sign_in" named="True">
+                        <property name="command" type="command" cbtype="with_wid">show_something_else</property>
+                        <property name="style">Secondary_Btn.TButton</property>
+                        <property name="text" translatable="yes">Sign In</property>
+                        <layout manager="pack">
+                          <property name="pady">5</property>
+                          <property name="side">right</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Frame" id="main_frame" named="True">
+        <property name="height">200</property>
+        <property name="style">Default_Background.TFrame</property>
+        <property name="width">200</property>
+        <layout manager="place">
+          <property name="anchor">nw</property>
+          <property name="relheight">1.0</property>
+          <property name="relwidth">1.0</property>
+          <property name="x">0</property>
+          <property name="y">0</property>
+        </layout>
+        <child>
+          <object class="ttk.Frame" id="frame4">
+            <property name="height">200</property>
+            <property name="style">Inner_1.TFrame</property>
+            <property name="width">200</property>
+            <layout manager="place">
+              <property name="anchor">nw</property>
+              <property name="relheight">1.0</property>
+              <property name="relwidth">1.0</property>
+              <property name="x">0</property>
+              <property name="y">0</property>
+            </layout>
+            <containerlayout manager="pack">
+              <property name="propagate">False</property>
+            </containerlayout>
+            <child>
+              <object class="ttk.Button" id="button10">
+                <property name="command" type="command" cbtype="simple">sign_out_pressed</property>
+                <property name="style">Secondary_Btn_MainColor.TButton</property>
+                <property name="text" translatable="yes">Sign Out</property>
+                <layout manager="place">
+                  <property name="anchor">nw</property>
+                  <property name="relx">1.0</property>
+                  <property name="x">-100</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="frame15">
+                <property name="height">200</property>
+                <property name="style">Inner_1.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="pack">
+                  <property name="side">top</property>
+                </layout>
+                <child>
+                  <object class="ttk.OptionMenu" id="optionmenu5">
+                    <property name="value">Title</property>
+                    <property name="values">Title,Author,Publisher,Genre,Release Year,Friend Email</property>
+                    <property name="variable">string:search_sort_var</property>
+                    <layout manager="pack">
+                      <property name="fill">y</property>
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Entry" id="book_search_entry" named="True">
+                    <property name="font">{Cascadia Code SemiBold} 8 {}</property>
+                    <property name="style">Normal_Entry.TEntry</property>
+                    <property name="text" translatable="yes">Search</property>
+                    <property name="textvariable">string:search_text_var</property>
+                    <property name="width">40</property>
+                    <layout manager="pack">
+                      <property name="fill">both</property>
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Button" id="book_search" named="True">
+                    <property name="command" type="command" cbtype="simple">search_pressed</property>
+                    <property name="style">Secondary_Btn.TButton</property>
+                    <property name="text" translatable="yes">Search</property>
+                    <layout manager="pack">
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="frame17">
+                <property name="height">200</property>
+                <property name="style">Inner_1.TFrame</property>
+                <property name="width">200</property>
+                <layout manager="place">
+                  <property name="anchor">nw</property>
+                  <property name="height">-30</property>
+                  <property name="relheight">1.0</property>
+                  <property name="relwidth">1.0</property>
+                  <property name="width">-60</property>
+                  <property name="x">30</property>
+                  <property name="y">30</property>
+                </layout>
+                <child>
+                  <object class="ttk.Frame" id="frame18">
+                    <property name="style">Inner_2.TFrame</property>
+                    <property name="width">275</property>
+                    <layout manager="pack">
+                      <property name="anchor">w</property>
+                      <property name="fill">y</property>
+                      <property name="side">left</property>
+                    </layout>
+                    <containerlayout manager="pack">
+                      <property name="propagate">False</property>
+                    </containerlayout>
+                    <child>
+                      <object class="ttk.Label" id="label25">
+                        <property name="style">Header1Bk2.TLabel</property>
+                        <property name="text" translatable="yes">Collections</property>
+                        <layout manager="pack">
+                          <property name="anchor">nw</property>
+                          <property name="fill">x</property>
+                          <property name="side">top</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Separator" id="separator10">
+                        <property name="orient">horizontal</property>
+                        <layout manager="pack">
+                          <property name="fill">x</property>
+                          <property name="side">top</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Frame" id="frame21">
+                        <property name="height">15</property>
+                        <property name="style">Inner_2.TFrame</property>
+                        <property name="width">0</property>
+                        <layout manager="pack">
+                          <property name="side">top</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="pygubu.builder.widgets.scrolledframe" id="collection_scroller" named="True">
+                        <property name="scrolltype">both</property>
+                        <property name="style">Inner_1.TFrame</property>
+                        <property name="usemousewheel">true</property>
+                        <layout manager="pack">
+                          <property name="anchor">nw</property>
+                          <property name="expand">true</property>
+                          <property name="fill">both</property>
+                          <property name="side">top</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Frame" id="collection_quick_frame" named="True">
+                            <property name="cursor">hand2</property>
+                            <property name="style">Inner_2.TFrame</property>
+                            <layout manager="pack">
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Frame" id="frame24">
+                    <property name="height">200</property>
+                    <property name="style">Inner_1.TFrame</property>
+                    <property name="width">200</property>
+                    <layout manager="pack">
+                      <property name="expand">true</property>
+                      <property name="fill">both</property>
+                      <property name="padx">30</property>
+                      <property name="side">left</property>
+                    </layout>
+                    <containerlayout manager="pack">
+                      <property name="propagate">False</property>
+                    </containerlayout>
+                    <child>
+                      <object class="pygubu.builder.widgets.scrolledframe" id="main_scroller" named="True">
+                        <property name="scrolltype">both</property>
+                        <property name="style">Inner_1.TFrame</property>
+                        <property name="usemousewheel">true</property>
+                        <layout manager="pack">
+                          <property name="expand">true</property>
+                          <property name="fill">both</property>
+                          <property name="side">left</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Frame" id="frame25">
+                            <property name="height">15</property>
+                            <property name="style">Inner_1.TFrame</property>
+                            <layout manager="pack">
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Frame" id="frame27">
+                            <property name="height">900</property>
+                            <property name="style">Inner_1.TFrame</property>
+                            <property name="width">500</property>
+                            <layout manager="pack">
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                            <child>
+                              <object class="ttk.Frame" id="results_frame" named="True">
+                                <property name="height">200</property>
+                                <property name="style">Inner_2.TFrame</property>
+                                <layout manager="pack">
+                                  <property name="side">top</property>
+                                </layout>
+                                <child>
+                                  <object class="ttk.Frame" id="frame29">
+                                    <property name="height">200</property>
+                                    <property name="style">Inner_2.TFrame</property>
+                                    <property name="width">200</property>
+                                    <layout manager="pack">
+                                      <property name="side">top</property>
+                                    </layout>
+                                    <child>
+                                      <object class="ttk.Label" id="label26">
+                                        <property name="style">Header1Bk2.TLabel</property>
+                                        <property name="text" translatable="yes">Sort By:</property>
+                                        <layout manager="pack">
+                                          <property name="side">left</property>
+                                        </layout>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="ttk.OptionMenu" id="book_sort_menu" named="True">
+                                        <property name="command" type="command" cbtype="simple">sort_books</property>
+                                        <property name="value">Title</property>
+                                        <property name="values">Title,Author,Publisher,Genre,Release Year</property>
+                                        <property name="variable">string:sort_by_var</property>
+                                        <layout manager="pack">
+                                          <property name="side">left</property>
+                                        </layout>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="ttk.OptionMenu" id="optionmenu2" named="True">
+                                        <property name="command" type="command" cbtype="simple">sort_books</property>
+                                        <property name="value">Ascending</property>
+                                        <property name="values">Ascending,Descending</property>
+                                        <property name="variable">string:sort_order_var</property>
+                                        <layout manager="pack">
+                                          <property name="side">right</property>
+                                        </layout>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="ttk.Label" id="label27">
+                                        <property name="style">Header1Bk2.TLabel</property>
+                                        <property name="text" translatable="yes">Sort Order:</property>
+                                        <layout manager="pack">
+                                          <property name="side">right</property>
+                                        </layout>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="ttk.Frame" id="frame31">
+                                        <property name="height">30</property>
+                                        <property name="style">Inner_2.TFrame</property>
+                                        <property name="width">30</property>
+                                        <layout manager="pack">
+                                          <property name="side">top</property>
+                                        </layout>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="ttk.Separator" id="separator12">
+                                    <property name="orient">horizontal</property>
+                                    <layout manager="pack">
+                                      <property name="fill">x</property>
+                                      <property name="side">top</property>
+                                    </layout>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="ttk.Frame" id="frame44">
+                                    <property name="height">200</property>
+                                    <property name="style">Inner_2.TFrame</property>
+                                    <property name="width">200</property>
+                                    <layout manager="pack">
+                                      <property name="padx">5</property>
+                                      <property name="side">top</property>
+                                    </layout>
+                                    <child>
+                                      <object class="ttk.Label" id="label42">
+                                        <property name="style">Header1Bk2.TLabel</property>
+                                        <property name="text" translatable="yes">Viewing Collection</property>
+                                        <property name="textvariable">string:results_text_var</property>
+                                        <layout manager="pack">
+                                          <property name="side">left</property>
+                                        </layout>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="ttk.Frame" id="collection_info_frame" named="True">
+                                        <property name="height">200</property>
+                                        <property name="style">Inner_2.TFrame</property>
+                                        <property name="width">200</property>
+                                        <layout manager="pack">
+                                          <property name="side">left</property>
+                                        </layout>
+                                        <child>
+                                          <object class="ttk.Entry" id="collection_view_name_entry" named="True">
+                                            <property name="font">{Cascadia Code SemiBold} 10 {}</property>
+                                            <property name="style">Normal_Entry.TEntry</property>
+                                            <property name="text" translatable="yes">Insert Name</property>
+                                            <layout manager="pack">
+                                              <property name="side">left</property>
+                                            </layout>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="ttk.Button" id="button2">
+                                            <property name="command" type="command" cbtype="simple">view_random_pressed</property>
+                                            <property name="style">Secondary_Btn.TButton</property>
+                                            <property name="text" translatable="yes">View Random Book</property>
+                                            <layout manager="pack">
+                                              <property name="padx">5</property>
+                                              <property name="side">left</property>
+                                            </layout>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="ttk.Button" id="button3">
+                                            <property name="command" type="command" cbtype="simple">delete_collection_pressed</property>
+                                            <property name="style">Secondary_Btn_MainColor.TButton</property>
+                                            <property name="text" translatable="yes">Delete</property>
+                                            <layout manager="pack">
+                                              <property name="side">right</property>
+                                            </layout>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Frame" id="book_view_frame" named="True">
+                        <property name="height">200</property>
+                        <property name="style">Inner_2.TFrame</property>
+                        <property name="width">500</property>
+                        <layout manager="place">
+                          <property name="anchor">nw</property>
+                          <property name="rely">1.0</property>
+                          <property name="x">0</property>
+                          <property name="y">0</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Frame" id="frame40">
+                            <property name="height">15</property>
+                            <property name="style">Inner_1.TFrame</property>
+                            <layout manager="pack">
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Frame" id="frame11">
+                            <property name="height">0</property>
+                            <property name="style">Inner_2.TFrame</property>
+                            <property name="width">500</property>
+                            <layout manager="pack">
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Frame" id="frame9">
+                            <property name="height">200</property>
+                            <property name="style">Inner_2.TFrame</property>
+                            <property name="width">200</property>
+                            <layout manager="pack">
+                              <property name="fill">x</property>
+                              <property name="padx">5</property>
+                              <property name="side">top</property>
+                            </layout>
+                            <child>
+                              <object class="ttk.Label" id="label15">
+                                <property name="style">Header1Bk2.TLabel</property>
+                                <property name="text" translatable="yes">Viewing Book</property>
+                                <layout manager="pack">
+                                  <property name="side">left</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="ttk.Button" id="button4">
+                                <property name="command" type="command" cbtype="simple">back_pressed</property>
+                                <property name="style">Secondary_Btn.TButton</property>
+                                <property name="text" translatable="yes">Back</property>
+                                <layout manager="pack">
+                                  <property name="anchor">n</property>
+                                  <property name="side">right</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Separator" id="separator4">
+                            <property name="orient">horizontal</property>
+                            <layout manager="pack">
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Frame" id="details_frame" named="True">
+                            <property name="height">200</property>
+                            <property name="style">Inner_2.TFrame</property>
+                            <property name="width">200</property>
+                            <layout manager="pack">
+                              <property name="fill">x</property>
+                              <property name="padx">5</property>
+                              <property name="pady">5</property>
+                              <property name="side">top</property>
+                            </layout>
+                            <child>
+                              <object class="ttk.Label" id="label16">
+                                <property name="style">Header2Bk3.TLabel</property>
+                                <property name="text" translatable="yes">Details:</property>
+                                <layout manager="pack">
+                                  <property name="anchor">w</property>
+                                  <property name="side">top</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Frame" id="frame14">
+                            <property name="height">200</property>
+                            <property name="style">Inner_2.TFrame</property>
+                            <property name="width">200</property>
+                            <layout manager="pack">
+                              <property name="pady">5</property>
+                              <property name="side">top</property>
+                            </layout>
+                            <child>
+                              <object class="ttk.Entry" id="start_page_entry" named="True">
+                                <property name="font">{Cascadia Code SemiBold} 8 {}</property>
+                                <property name="style">Normal_Entry.TEntry</property>
+                                <property name="text" translatable="yes">Start Page</property>
+                                <property name="validate">key</property>
+                                <property name="width">10</property>
+                                <layout manager="pack">
+                                  <property name="padx">5</property>
+                                  <property name="side">left</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="ttk.Entry" id="end_page_entry" named="True">
+                                <property name="font">{Cascadia Code SemiBold} 8 {}</property>
+                                <property name="style">Normal_Entry.TEntry</property>
+                                <property name="text" translatable="yes">End Page</property>
+                                <property name="width">10</property>
+                                <layout manager="pack">
+                                  <property name="side">left</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="ttk.Button" id="button5">
+                                <property name="command" type="command" cbtype="simple">read_book_pressed</property>
+                                <property name="style">Secondary_Btn.TButton</property>
+                                <property name="text" translatable="yes">Read</property>
+                                <layout manager="pack">
+                                  <property name="padx">10</property>
+                                  <property name="side">left</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="ttk.Label" id="page_number_error" named="True">
+                                <property name="font">{Cascadia Code SemiLight} 8 {}</property>
+                                <property name="foreground">#ff8040</property>
+                                <property name="style">Header2Bk3.TLabel</property>
+                                <property name="text" translatable="yes">Please enter valid page numbers.</property>
+                                <layout manager="pack">
+                                  <property name="side">left</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Frame" id="frame19">
+                            <property name="height">200</property>
+                            <property name="style">Inner_2.TFrame</property>
+                            <property name="width">200</property>
+                            <layout manager="pack">
+                              <property name="pady">5</property>
+                              <property name="side">top</property>
+                            </layout>
+                            <child>
+                              <object class="ttk.Entry" id="rating_text_entry" named="True">
+                                <property name="font">{Cascadia Code SemiBold} 8 {}</property>
+                                <property name="style">Normal_Entry.TEntry</property>
+                                <property name="text" translatable="yes">Rating (1-5)</property>
+                                <property name="width">12</property>
+                                <layout manager="pack">
+                                  <property name="side">left</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="ttk.Button" id="button6">
+                                <property name="command" type="command" cbtype="simple">rate_book_pressed</property>
+                                <property name="style">Secondary_Btn.TButton</property>
+                                <property name="text" translatable="yes">Rate</property>
+                                <layout manager="pack">
+                                  <property name="padx">10</property>
+                                  <property name="side">left</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="ttk.Label" id="rating_error_label" named="True">
+                                <property name="font">{Cascadia Code SemiLight} 8 {}</property>
+                                <property name="foreground">#ff8040</property>
+                                <property name="style">Header2Bk3.TLabel</property>
+                                <property name="text" translatable="yes">Please enter a rating 1-5.</property>
+                                <layout manager="pack">
+                                  <property name="side">left</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Button" id="button8">
+                            <property name="command" type="command" cbtype="simple">save_book_pressed</property>
+                            <property name="style">Secondary_Btn.TButton</property>
+                            <property name="text" translatable="yes">Add / Edit</property>
+                            <layout manager="pack">
+                              <property name="pady">5</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Frame" id="save_frame" named="True">
+                    <property name="borderwidth">2</property>
+                    <property name="height">200</property>
+                    <property name="relief">raised</property>
+                    <property name="style">Inner_1.TFrame</property>
+                    <property name="width">200</property>
+                    <layout manager="place">
+                      <property name="anchor">nw</property>
+                      <property name="height">300</property>
+                      <property name="relheight">0.0</property>
+                      <property name="relwidth">0.0</property>
+                      <property name="relx">.5</property>
+                      <property name="rely">0.5</property>
+                      <property name="width">280</property>
+                      <property name="x">-120</property>
+                      <property name="y">-300</property>
+                    </layout>
+                    <child>
+                      <object class="ttk.Frame" id="frame23">
+                        <property name="height">200</property>
+                        <property name="style">Inner_1.TFrame</property>
+                        <property name="width">200</property>
+                        <layout manager="pack">
+                          <property name="fill">x</property>
+                          <property name="padx">10</property>
+                          <property name="pady">10</property>
+                          <property name="side">top</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Label" id="label28">
+                            <property name="style">Header1.TLabel</property>
+                            <property name="text" translatable="yes">Viewing User...</property>
+                            <property name="textvariable">string:save_frame_var</property>
+                            <layout manager="pack">
+                              <property name="side">left</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Button" id="button11">
+                            <property name="command" type="command" cbtype="simple">close_save_frame</property>
+                            <property name="style">Main_Btn.TButton</property>
+                            <property name="text" translatable="yes">X</property>
+                            <property name="width">2</property>
+                            <layout manager="pack">
+                              <property name="side">right</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Frame" id="view_user_frame" named="True">
+                        <property name="height">200</property>
+                        <property name="style">Inner_1.TFrame</property>
+                        <property name="width">200</property>
+                        <layout manager="pack">
+                          <property name="expand">true</property>
+                          <property name="fill">both</property>
+                          <property name="side">top</property>
+                        </layout>
+                        <child>
+                          <object class="pygubu.builder.widgets.scrolledframe" id="user_contents_scrolled" named="True">
+                            <property name="scrolltype">both</property>
+                            <property name="style">Inner_1.TFrame</property>
+                            <property name="usemousewheel">true</property>
+                            <layout manager="pack">
+                              <property name="expand">false</property>
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Button" id="button9">
+                            <property name="command" type="command" cbtype="simple">unfollow_pressed</property>
+                            <property name="style">Secondary_Btn_MainColor.TButton</property>
+                            <property name="text" translatable="yes">Unfollow</property>
+                            <layout manager="place">
+                              <property name="anchor">nw</property>
+                              <property name="relx">.5</property>
+                              <property name="rely">1.0</property>
+                              <property name="x">-37</property>
+                              <property name="y">-60</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Frame" id="save_collection_frame" named="True">
+                        <property name="height">200</property>
+                        <property name="style">Inner_1.TFrame</property>
+                        <property name="width">200</property>
+                        <layout manager="pack">
+                          <property name="expand">true</property>
+                          <property name="fill">both</property>
+                          <property name="side">top</property>
+                        </layout>
+                        <child>
+                          <object class="pygubu.builder.widgets.scrolledframe" id="save_scroller" named="True">
+                            <property name="scrolltype">both</property>
+                            <property name="style">Inner_1.TFrame</property>
+                            <property name="usemousewheel">true</property>
+                            <layout manager="pack">
+                              <property name="expand">true</property>
+                              <property name="fill">both</property>
+                              <property name="padx">10</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Button" id="new_collection_btn" named="True">
+                            <property name="command" type="command" cbtype="simple">create_new_collection_pressed</property>
+                            <property name="style">Secondary_Btn.TButton</property>
+                            <property name="text" translatable="yes">+ Create New Collection</property>
+                            <layout manager="pack">
+                              <property name="fill">x</property>
+                              <property name="padx">15</property>
+                              <property name="pady">10</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Frame" id="new_collection_lower_frame" named="True">
+                            <property name="height">200</property>
+                            <property name="style">Inner_1.TFrame</property>
+                            <property name="width">200</property>
+                            <layout manager="pack">
+                              <property name="fill">x</property>
+                              <property name="padx">15</property>
+                              <property name="pady">10</property>
+                              <property name="side">top</property>
+                            </layout>
+                            <child>
+                              <object class="ttk.Entry" id="collection_name_entry" named="True">
+                                <property name="font">{Cascadia Mono SemiBold} 8 {}</property>
+                                <property name="style">Normal_Entry.TEntry</property>
+                                <property name="text" translatable="yes">Enter Collection name...</property>
+                                <layout manager="pack">
+                                  <property name="fill">x</property>
+                                  <property name="side">top</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="ttk.Label" id="label29">
+                                <property name="font">{Cascadia Mono SemiLight} 8 {}</property>
+                                <property name="foreground">#ff8040</property>
+                                <property name="style">Header1.TLabel</property>
+                                <property name="text" translatable="yes">Name Required</property>
+                                <property name="textvariable">string:collection_name_error_var</property>
+                                <layout manager="pack">
+                                  <property name="fill">x</property>
+                                  <property name="side">top</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="ttk.Button" id="button12">
+                                <property name="command" type="command" cbtype="simple">create_collection_pressed</property>
+                                <property name="style">Secondary_Btn.TButton</property>
+                                <property name="text" translatable="yes">Create</property>
+                                <layout manager="pack">
+                                  <property name="side">top</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Frame" id="frame10">
+                    <property name="style">Inner_2.TFrame</property>
+                    <property name="width">275</property>
+                    <layout manager="pack">
+                      <property name="anchor">e</property>
+                      <property name="fill">y</property>
+                      <property name="side">right</property>
+                    </layout>
+                    <containerlayout manager="pack">
+                      <property name="propagate">False</property>
+                    </containerlayout>
+                    <child>
+                      <object class="ttk.Label" id="label11">
+                        <property name="style">Header1Bk2.TLabel</property>
+                        <property name="text" translatable="yes">Following</property>
+                        <layout manager="pack">
+                          <property name="anchor">nw</property>
+                          <property name="fill">x</property>
+                          <property name="side">top</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Separator" id="separator3">
+                        <property name="orient">horizontal</property>
+                        <layout manager="pack">
+                          <property name="fill">x</property>
+                          <property name="side">top</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Frame" id="frame28">
+                        <property name="height">200</property>
+                        <property name="style">Inner_2.TFrame</property>
+                        <property name="width">200</property>
+                        <layout manager="pack">
+                          <property name="fill">x</property>
+                          <property name="padx">15</property>
+                          <property name="side">top</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Frame" id="frame32">
+                            <property name="height">15</property>
+                            <property name="style">Inner_2.TFrame</property>
+                            <property name="width">200</property>
+                            <layout manager="pack">
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Frame" id="frame30">
+                            <property name="height">200</property>
+                            <property name="style">Inner_2.TFrame</property>
+                            <property name="width">200</property>
+                            <layout manager="pack">
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                            <child>
+                              <object class="ttk.Entry" id="following_friend_entry" named="True">
+                                <property name="font">{Cascadia Code SemiBold} 8 {}</property>
+                                <property name="style">Normal_Entry.TEntry</property>
+                                <property name="text" translatable="yes">Enter Friend's Email</property>
+                                <layout manager="pack">
+                                  <property name="expand">true</property>
+                                  <property name="fill">both</property>
+                                  <property name="side">left</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="ttk.Button" id="button7">
+                                <property name="command" type="command" cbtype="simple">follow_pressed</property>
+                                <property name="style">Secondary_Btn.TButton</property>
+                                <property name="text" translatable="yes">Follow</property>
+                                <layout manager="pack">
+                                  <property name="side">right</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="label14">
+                            <property name="foreground">#ff8040</property>
+                            <property name="style">Header2Bk3.TLabel</property>
+                            <property name="textvariable">string:following_error_var</property>
+                            <layout manager="pack">
+                              <property name="fill">x</property>
+                              <property name="side">bottom</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="pygubu.builder.widgets.scrolledframe" id="following_scroller" named="True">
+                        <property name="scrolltype">both</property>
+                        <property name="style">Inner_1.TFrame</property>
+                        <property name="usemousewheel">true</property>
+                        <layout manager="pack">
+                          <property name="anchor">nw</property>
+                          <property name="expand">true</property>
+                          <property name="fill">both</property>
+                          <property name="side">top</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Frame" id="inner_following_frame" named="True">
+                            <property name="cursor">hand2</property>
+                            <property name="style">Inner_2.TFrame</property>
+                            <layout manager="pack">
+                              <property name="fill">x</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
