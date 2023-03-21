@@ -1,4 +1,6 @@
-
+from Modules.DBInteraction import Connection
+DATABASE = Connection()
+USER_ID = 00000000
 # Placeholder validation methods
 def is_valid_email(email: str):
     return '@' in email
@@ -38,81 +40,67 @@ def sign_out_user():
     # Do database stuff here to log out the current user
     print("User has been signed out.")
 
-
+#################### SQL DATA METHODS #############################################################
 books = []
 test_collections = {}
 
 def get_collection_view_data(collection_id):
     # Get data from collection in db and return it
-    return "Collection " + str(collection_id), test_collections[collection_id]
+    return DATABASE.Query(f"SELECT * FROM collection WHERE collection_id = {collection_id}")
 
 
-def read_book(book_id, start_page, end_page):
-    # Add to reading sessions
-    print("read book", book_id, start_page, "to", end_page)
-    pass
+def read_book(book_id,start_time,end_time, start_page, end_page):
+    DATABASE.Query(f"INSERT INTO reading_session (user_id,book_id,session_start,session_end,start_page,end_page) VALUES ({USER_ID},{book_id},{start_time},{end_time}, {start_page}, {end_page})")
 
-
+#TODO Make distinct
 def rate_book(book_id, rating):
-    # Add to reading sessions
-    print("rated book", book_id, rating)
+    DATABASE.Query(f"INSERT INTO reading_session (user_id,book_id,rating) VALUES ({USER_ID},{book_id},{rating})")
 
 
 def add_to_collection(book_id, collection_id):
-    # Add to collection
-    test_collections[collection_id].append(books[book_id])
+    DATABASE.Query(f"INSERT INTO contains (\"collection_id\",\"bid\") VALUES ({collection_id},{book_id})")
 
 
 def remove_from_collection(book_id, collection_id):
-    # Add to collection
-    for book in test_collections[collection_id]:
-        if book.id == book_id:
-            test_collections[collection_id].remove(book)
-            return
+    DATABASE.Query(f"DELETE FROM contains WHERE collection_id = {collection_id} AND bid = {book_id}")
 
 
 def delete_collection(collection_id):
-    # Delete a collection
-    print("Deleted collection", collection_id)
-    del test_collections[collection_id]
+    DATABASE.Query(f"DELETE FROM contains WHERE collection_id = {collection_id}")
 
 
 def get_rating_on_book(book_id):
-    # Get the user's rating on the book
-    return -1
+    DATABASE.Query(f"SELECT AVG(rating) FROM rating WHERE book_id = {book_id}")
 
 
 def book_in_collection(book_id, collection_id):
-    for book in test_collections[collection_id]:
+    for book in get_collection_view_data(collection_id):
         if book.id == book_id:
             return True
     return False
 
-
+#TODO What is getBook
 def get_book(book_id):
+    return DATABASE.Query(f"SELECT * FROM books WHERE book_id = {book_id}")
+    #
     # Get the details of the book
-    for i in test_collections:
-        for book in test_collections[i]:
-            if book.id == book_id:
-                return book
+    #for i in test_collections:
+    #    for book in test_collections[i]:
+    #        if book.id == book_id:
+    #            return book
 
-
+#TODO does this automatically go into contains? could we create a trigger
 def create_collection(collection_name):
     # Create a collection with the given name and return its ID
-    collection_id = len(test_collections)
-    test_collections[collection_id] = []
-    return collection_id
+    return DATABASE.Query(f"INSERT INTO collections ('uid','collectionName') OUTPUT collection_id VALUES ({collection_name},{USER_ID})")
 
 
 def change_collection_name(collection_id, name):
-    # Change a collections name
-    print("totally changed the collection's name!")
+    DATABASE.Query(f"UPDATE collection SET collection_name = '{name}' WHERE ")
 
-
+#Create a joint table
 def query_search(query, search_for, sort_by, sort_order):
-    # Query and return the results, yeahh
-    return []
-
+    return DATABASE.Query(f"SELECT bid,title,pages,release_date  FROM books Where bid LIKE \"%{query}%\" OR title LIKE \"%{query}%\" OR pages LIKE \"%{query}%\" OR release_date LIKE \"%{query}%\";")
 
 temp_following = []
 
@@ -123,18 +111,11 @@ def get_following():
 
 
 def get_user(uid):
-    # Get the data for a user with the given uid
-    for user in temp_following:
-        if user.id.value == uid:
-            return user
+    DATABASE.Query(f"SELECT * from user WHERE user_id = {uid}")
 
 
 def unfollow_user(uid):
-    # Unfollow the user with the given id
-    for user in temp_following:
-        if user.id.value == uid:
-            temp_following.remove(user)
-            return
+    DATABASE.Query(f"DELETE FROM friend WHERE follower_uid = {USER_ID} AND followee_uid = {uid}")
 
 
 def try_follow_user(other_email):
@@ -151,4 +132,10 @@ def try_follow_user(other_email):
 
 
 def get_collections(sort_by, sort_order):
-    return test_collections
+    return DATABASE.Query(f"SELECT * FROM collection ORDER BY {sort_by} {sort_order} ")
+
+def get_num_books_and_pages(collection_id):
+    books = DATABASE.Query(f"SELECT book_id FROM collection WHERE collection_id = '{collection_id}'")
+
+    pageNum = DATABASE.Query(f"SELECT SUM(pages) FROM book WHERE book_id IN {books}")
+    return books.size(),pageNum

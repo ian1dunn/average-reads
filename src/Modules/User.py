@@ -4,9 +4,8 @@ import random
 from enum import Enum
 from src.DataCreation.PremadeData import FIRST_NAMES, LAST_NAMES, EMAIL_DOMAINS
 from GlobalStuff import increment_str
-from src.AverageReadsMain import select_from_table
 from ID import ID
-
+from DBInteraction import Connection
 
 class Attributes(Enum):
     uid = "uid"
@@ -45,8 +44,8 @@ def generate_username(first_name: str, last_name: str):
     :return: a unique username based on a user's first and last name. Uses values in the database to ensure unique.
     """
     cur_str = (first_name[0] + last_name[0:2]).lower()
-    matches = select_from_table(USER_TABLE_NAME, Attributes.username.value, USERNAME_SELECTION_CONDITION + cur_str + "%")
-    return cur_str + increment_str(matches[-1][3:]) if matches else cur_str
+    #matches = select_from_table(USER_TABLE_NAME, Attributes.username.value, USERNAME_SELECTION_CONDITION + cur_str + "%")
+    return cur_str
 
 
 def generate_username_temporary(first_name: str, last_name: str):
@@ -106,10 +105,10 @@ class User:
         return User(ID(last_uid), username, generate_password(3, MAX_PASSWORD_LENGTH, MIN_PASSWORD_SPECIAL_CHARS), f_name, l_name, email, datetime.now(), datetime.now())
 
     def __str__(self):
-        return f"{str(self.id), self.username, self.password, self.f_name, self.l_name, self.email, self.creation_date, self.last_access_date}"
+        return f"{str(self.id.__str__()), self.username, self.password, self.f_name, self.l_name, self.email, self.creation_date, self.last_access_date}"
 
     def __iter__(self):
-        return iter([str(self.id), self.username, self.password, self.f_name, self.l_name, self.email, self.creation_date, self.last_access_date])
+        return iter([str(self.id.__str__()), self.username, self.password, self.f_name, self.l_name, self.email, self.creation_date, self.last_access_date])
 
 
 if __name__ == '__main__':

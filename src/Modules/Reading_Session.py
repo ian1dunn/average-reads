@@ -4,7 +4,6 @@ import random
 from enum import Enum
 from src.DataCreation.PremadeData import TITLES
 from GlobalStuff import increment_str
-from src.AverageReadsMain import select_from_table
 from ID import ID
 from Book import BOOK_TABLE_NAME
 from User import USER_TABLE_NAME

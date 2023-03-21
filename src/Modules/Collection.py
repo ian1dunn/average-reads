@@ -4,9 +4,8 @@ import random
 from enum import Enum
 from src.DataCreation.PremadeData import TITLES
 from GlobalStuff import increment_str
-from src.AverageReadsMain import select_from_table
 from ID import ID
-
+from DBInteraction import Connection
 
 class Attributes(Enum):
     collection_id = "collection_id"
@@ -35,6 +34,7 @@ class Collection:
         self.collection_id = collection_id
         self.uid = uid
         self.collection_name = collection_name
+
 
     @classmethod
     def generate_random(cls, last_uid: str | None):

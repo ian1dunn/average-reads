@@ -30,7 +30,7 @@ class ID:
         self.value = value
 
     def __str__(self):
-        return f"ID: {self.value}"
+        return self.value
     def getRandom(self,top):
         return str(random.randint(0,top))
 

@@ -4,9 +4,8 @@ import random
 from enum import Enum
 from src.DataCreation.PremadeData import TITLES
 from GlobalStuff import increment_str
-from src.AverageReadsMain import select_from_table
 from ID import ID
-
+from DBInteraction import Connection
 
 class Attributes(Enum):
     bid = "bid"
@@ -59,7 +58,7 @@ class Book:
         self.release_date = release_date
         #Should I create within the init or as a seperate create probably within init
 
-    
+
     @classmethod
     def generate_random(cls, last_bid: str | None):
         titles = generate_title_temporary(random_Title())
