@@ -104,31 +104,32 @@ def query_search(query, search_for, sort_by, sort_order):
 
 temp_following = []
 
-
+#FIXME Should i get users after getting user id's Where specific properties
 def get_following():
     # Get the user's following, return a list of users.
-    return temp_following
+    return DATABASE.Query(f"SELECT follower_uid FROM friend where followee_uid = '{USER_ID}'")
 
 
 def get_user(uid):
-    DATABASE.Query(f"SELECT * from user WHERE user_id = {uid}")
+    return DATABASE.Query(f"SELECT * from user WHERE user_id = {uid}")
 
 
 def unfollow_user(uid):
     DATABASE.Query(f"DELETE FROM friend WHERE follower_uid = {USER_ID} AND followee_uid = {uid}")
 
-
+#FIXME Definitly doesnt check if the email is valid or if already following need to add EXIST statement
 def try_follow_user(other_email):
     # Try to follow the user. 0 if valid, 1 if user invalid, 2 if already following
-    is_valid_uid = True  # Search the database for the user first "is_valid_uid(other_email)"
-    if not is_valid_uid:
-        return 1
-    is_following = False  # Check if already friends  "is_following(other_email)"
-    if is_following:
-        return 2
-    # Follow the user
-    print("Followed user", other_email)
-    return 0
+    DATABASE.Query(f"INSERT INTO friend(follower_uid,followee_uid) VALUES('{USER_ID}',SELECT user_id FROM users WHERE email = '{other_email}';)");
+    #is_valid_uid = True  # Search the database for the user first "is_valid_uid(other_email)"
+    #if not is_valid_uid:
+    #    return 1
+    #is_following = False  # Check if already friends  "is_following(other_email)"
+    #if is_following:
+    #    return 2
+    ## Follow the user
+    #print("Followed user", other_email)
+    #return 0
 
 
 def get_collections(sort_by, sort_order):
@@ -136,6 +137,5 @@ def get_collections(sort_by, sort_order):
 
 def get_num_books_and_pages(collection_id):
     books = DATABASE.Query(f"SELECT book_id FROM collection WHERE collection_id = '{collection_id}'")
-
     pageNum = DATABASE.Query(f"SELECT SUM(pages) FROM book WHERE book_id IN {books}")
     return books.size(),pageNum
