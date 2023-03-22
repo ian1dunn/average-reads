@@ -2,24 +2,18 @@
 import random
 import threading
 import tkinter
-import sys
-import os
-
-
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.append(parent_dir)
 
 import pathlib
 from AverageReadsMain import validate_sign_in, validate_sign_up, sign_up_new_user, sign_in_user, get_collection_view_data, \
     get_collections, read_book, rate_book, add_to_collection, create_collection, remove_from_collection, \
     book_in_collection, get_rating_on_book, delete_collection, change_collection_name, query_search, try_follow_user, \
-    get_following, get_user, unfollow_user, get_book, sign_out_user, get_num_books_and_pages
+    get_following, get_user, unfollow_user, get_book, sign_out_user, get_num_books_and_pages, States, process_finished
 
 import tkinter.ttk as ttk
 import pygubu
 
 PROJECT_PATH = pathlib.Path(__file__).parent
-PROJECT_UI = PROJECT_PATH / "average_reads_pygubu.ui"
+PROJECT_UI = PROJECT_PATH / "UI\\average_reads_pygubu.ui"
 
 
 class AverageReadsPygubuApp:
@@ -31,9 +25,7 @@ class AverageReadsPygubuApp:
         self.mainwindow = builder.get_object("toplevel1", master)
 
         self.email_var = None
-        self.email_hint = None
         self.password_var = None
-        self.password_hint = None
         self.first_name_var = None
         self.last_name_var = None
         self.username_var = None
@@ -48,9 +40,7 @@ class AverageReadsPygubuApp:
         self.save_frame_var = None
         builder.import_variables(self,
                                  ['email_var',
-                                  'email_hint',
                                   'password_var',
-                                  'password_hint',
                                   'first_name_var',
                                   'last_name_var',
                                   'username_var',
@@ -138,6 +128,14 @@ class AverageReadsPygubuApp:
         elif widget_id == "show_sign_up":
             self.sign_up_frame.show(False)
 
+        self.si_email_cw.hide_error()
+        self.si_password_cw.hide_error()
+        self.su_email_cw.hide_error()
+        self.su_password_cw.hide_error()
+        self.first_name_cw.hide_error()
+        self.last_name_cw.hide_error()
+        self.username_cw.hide_error()
+
     def read_book_pressed(self):
         try:
             e1, e2 = int(self.start_page_entry.get()), int(self.end_page_entry.get())
@@ -151,7 +149,7 @@ class AverageReadsPygubuApp:
 
     def rate_book_pressed(self):
         try:
-            rating = float(self.rating_text_entry.get())
+            rating = float(self.rating_text_entry.get_text())
             if 1 <= rating <= 5:
                 self.rating_error_label.pack_forget()
                 rate_book(self.viewing_book_component.id, rating)
@@ -242,6 +240,8 @@ COLLECTION_CONTENT_TEXT = "Viewing Collection"
 
 COLLECTION_ERROR_TEXT = "Name Required"
 
+PASSWORD_INVALID_TEXT = "Your password must contain at least 1 special character."
+
 FOLLOWING_ERROR_TEXTS = (
 "Successfully followed the user.", "No users associated with this email.", "Already following this user.")
 
@@ -281,6 +281,7 @@ class CWidget:
                 if child.winfo_class() == ERROR_LABEL_CLASS:
                     self.error_label = child
                     self.error_label.pack_forget()
+                    break
 
     def hide(self):
         if self.widget.winfo_manager() == PACK_INFO_MANAGER:
@@ -306,6 +307,11 @@ class CWidget:
 
     def hide_error(self):
         self.error_label.pack_forget()
+
+    def set_error_text(self, text, show: bool = True):
+        self.error_label.config(text=text)
+        if show:
+            self.show_error()
 
     def bind_show_args(self, **kw):
         if self.tkinter_method == tkinter.Pack:
@@ -518,21 +524,6 @@ class ProceduralScroller(CWidget):
         component.hide()
 
 
-def call_validation_method(cwidgets: tuple, validation_method, success_method):
-    params = [j.value() for j in cwidgets]
-    results = validation_method(*params)
-    success = True
-    for i in range(len(results)):
-        if results[i]:
-            cwidgets[i].hide_error()
-        else:
-            success = False
-            cwidgets[i].show_error()
-
-    if success:
-        success_method(params)
-
-
 def count_total_pages(books):
     total = 0
     for book in books:
@@ -559,6 +550,7 @@ def main(self: AverageReadsPygubuApp):
     self.collection_name_entry = PlaceholderEntry(self.builder.get_object("collection_name_entry"))
     self.collection_view_name_entry = PlaceholderEntry(self.builder.get_object("collection_view_name_entry"))
     self.following_friend_entry = PlaceholderEntry(self.builder.get_object("following_friend_entry"))
+    self.rating_text_entry = PlaceholderEntry(self.builder.get_object("rating_text_entry"))
 
     self.main_procedural = ProceduralScroller("main_scroller", component_master=self.results_frame.widget, side=tkinter.LEFT, expand=True, fill=tkinter.BOTH)
     self.following_procedural = ProceduralScroller("following_scroller", component_master=self.builder.get_object("inner_following_frame"))
@@ -568,16 +560,15 @@ def main(self: AverageReadsPygubuApp):
     self.start_page_entry = self.builder.get_object("start_page_entry")
     self.end_page_entry = self.builder.get_object("end_page_entry")
     self.page_number_error = self.builder.get_object("page_number_error")
-    self.rating_text_entry = self.builder.get_object("rating_text_entry")
     self.rating_error_label = self.builder.get_object("rating_error_label")
 
-    si_email_cw = CWidget("si_email_frame", variable=self.email_var)
-    si_password_cw = CWidget("si_pw_frame", variable=self.password_var)
-    su_email_cw = CWidget("su_email_frame", variable=self.email_var)
-    su_password_cw = CWidget("su_pw_frame", variable=self.password_var)
-    first_name_cw = CWidget("su_fn_frame", variable=self.first_name_var)
-    last_name_cw = CWidget("su_ln_frame", variable=self.last_name_var)
-    username_cw = CWidget("su_un_frame", variable=self.username_var)
+    self.si_email_cw = CWidget("si_email_frame", variable=self.email_var)
+    self.si_password_cw = CWidget("si_pw_frame", variable=self.password_var)
+    self.su_email_cw = CWidget("su_email_frame", variable=self.email_var)
+    self.su_password_cw = CWidget("su_pw_frame", variable=self.password_var)
+    self.first_name_cw = CWidget("su_fn_frame", variable=self.first_name_var)
+    self.last_name_cw = CWidget("su_ln_frame", variable=self.last_name_var)
+    self.username_cw = CWidget("su_un_frame", variable=self.username_var)
 
     self.details_lc = ListComponent(self.builder.get_object("details_frame"), BOOK_COMPONENTS, width=500, cursor="")
     self.user_details_lc = ListComponent(self.builder.get_object("user_contents_scrolled").innerframe, USER_COMPONENTS, width=200, cursor="")
@@ -601,8 +592,7 @@ def main(self: AverageReadsPygubuApp):
              book.audience, book.release_date])
         self.removed_from_collection = False
 
-        self.rating_text_entry.delete("0", tkinter.END)
-        self.rating_text_entry.insert(0, get_rating_on_book(book.id))
+        self.rating_text_entry.set_text(get_rating_on_book(book.id))
 
         for checkbox in self.collection_checks_procedural.components:
             checkbox.force_state(book_in_collection(self.viewing_book.id, checkbox.id))
@@ -699,9 +689,12 @@ def main(self: AverageReadsPygubuApp):
         search_for_book(search_text, search_sort)
 
     def sign_in(params):
-        if len(params) > 2:  # signing up
+        if type(params) != str:  # signing up
             sign_up_new_user(*params)
-        sign_in_user(params[0], params[1])
+        sign_in_user(params[0])
+
+        self.show_something_else("show_sign_in")
+
         self.email_var.set("")
         self.password_var.set("")
         self.email_var.set("")
@@ -741,6 +734,57 @@ def main(self: AverageReadsPygubuApp):
                                                                 identifier=user.id.value, selected_method=display_user)
                                                   for user in get_following()])
 
+    def request_sign_in():
+        results = validate_sign_in(self.si_email_cw.value(), self.si_password_cw.value())
+        if results[0] == States.INVALID:
+            self.si_email_cw.show_error()
+        else:
+            self.si_email_cw.hide_error()
+
+        if results[1] == States.VALID:
+            self.si_password_cw.hide_error()
+        elif results[1] == States.INVALID_PASSWORD:
+            self.si_password_cw.set_error_text("Invalid email or password.")
+        else:
+            self.si_password_cw.set_error_text(PASSWORD_INVALID_TEXT)
+
+        if results[0] == States.EXISTS and results[1] == States.VALID:
+            sign_in(self.si_email_cw.value())
+
+    def request_sign_up():
+        results = validate_sign_up(self.su_email_cw.value(), self.su_password_cw.value(), self.first_name_cw.value(), self.last_name_cw.value(), self.username_cw.value())
+        if results[0] == States.INVALID:
+            self.su_email_cw.set_error_text("Please enter a valid email address.")
+        elif results[0] == States.EXISTS:
+            self.su_email_cw.set_error_text("This email is already in use.")
+        else:
+            self.su_email_cw.hide_error()
+
+        if results[1] == States.VALID:
+            self.si_password_cw.hide_error()
+        else:
+            self.si_password_cw.show_error()
+
+        if results[2] == States.INVALID:
+            self.first_name_cw.show_error()
+        else:
+            self.first_name_cw.hide_error()
+
+        if results[3] == States.INVALID:
+            self.last_name_cw.show_error()
+        else:
+            self.last_name_cw.hide_error()
+
+        if results[4] == States.INVALID:
+            self.username_cw.set_error_text("Please enter a valid username.")
+        elif results[4] == States.EXISTS:
+            self.username_cw.set_error_text("This username is already in use.")
+        else:
+            self.username_cw.hide_error()
+
+        if results[0] == States.VALID and results[1] == States.VALID and results[2] == States.VALID and results[3] == States.VALID and results[4] == States.VALID:
+            sign_in((self.si_email_cw.value(), self.si_password_cw.value(), self.first_name_cw.value(), self.last_name_cw.value(), self.username_cw.value()))
+
     self.setup_collections = refresh_collections
     self.refresh_collections = refresh_collections
     self.view_book = view_book
@@ -749,16 +793,14 @@ def main(self: AverageReadsPygubuApp):
     self.unfollow_pressed = unfollow_pressed
     self.sign_out_pressed = sign_out_pressed
 
-    self.request_sign_in = lambda: call_validation_method((si_email_cw, si_password_cw), validate_sign_in, sign_in)
-    self.request_sign_up = lambda: call_validation_method(
-        (su_email_cw, su_password_cw, first_name_cw, last_name_cw, username_cw), validate_sign_up, sign_in)
+    self.request_sign_in = request_sign_in
+    self.request_sign_up = request_sign_up
 
     self.collection_view_name_entry.bind(RETURN, attempt_collection_name_change)
     self.book_search_entry.bind(RETURN, search_pressed)
 
     PlaceholderEntry(self.start_page_entry)
     PlaceholderEntry(self.end_page_entry)
-    PlaceholderEntry(self.rating_text_entry)
 
     self.collection_name_error_var.set("")
 
@@ -790,3 +832,5 @@ if __name__ == "__main__":
         app.run()
     except KeyboardInterrupt:
         pass
+    finally:
+        process_finished()

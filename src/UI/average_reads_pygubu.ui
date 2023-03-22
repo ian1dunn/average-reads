@@ -121,8 +121,7 @@
                             <property name="font">{Cascadia Code SemiLight} 8 {}</property>
                             <property name="foreground">#ff8040</property>
                             <property name="style">Custom_Header.TLabel</property>
-                            <property name="text" translatable="yes">Please enter a valid email address</property>
-                            <property name="textvariable">string:email_hint</property>
+                            <property name="text" translatable="yes">Please enter a valid email address.</property>
                             <layout manager="pack">
                               <property name="anchor">nw</property>
                               <property name="side">top</property>
@@ -172,7 +171,6 @@
                             <property name="foreground">#ff8040</property>
                             <property name="style">Custom_Header.TLabel</property>
                             <property name="text" translatable="yes">Your password must contain at least 1 special character.</property>
-                            <property name="textvariable">string:password_hint</property>
                             <layout manager="pack">
                               <property name="anchor">nw</property>
                               <property name="side">top</property>
@@ -412,7 +410,6 @@
                             <property name="foreground">#ff8040</property>
                             <property name="style">Custom_Header.TLabel</property>
                             <property name="text" translatable="yes">Please enter a valid email address.</property>
-                            <property name="textvariable">string:email_hint</property>
                             <layout manager="pack">
                               <property name="anchor">nw</property>
                               <property name="side">top</property>
@@ -509,7 +506,6 @@
                             <property name="foreground">#ff8040</property>
                             <property name="style">Custom_Header.TLabel</property>
                             <property name="text" translatable="yes">Your password must contain at least 1 special character.</property>
-                            <property name="textvariable">string:password_hint</property>
                             <property name="width">0</property>
                             <property name="wraplength">275</property>
                             <layout manager="pack">

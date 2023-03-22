@@ -29,13 +29,16 @@ class Connection:
         except:
             print("Connection failed")
 
-    def Query(self, query: str) -> list[tuple] | None:
+    def Query(self, query: str, fetch_all=True) -> list[tuple] | None:
         cur = self.connection.cursor()
         cur.execute(query)
         results = None
-        if query.startswith("SELECT"):
+        if query.startswith("SELECT") or "RETURNING" in query:
             # Select is the only query which returns data (I think)
-            results = cur.fetchall()
+            if fetch_all:
+                results = cur.fetchall()
+            else:
+                results = cur.fetchone()
         else:
             # Made a change to the database, let's commit our changes
             self.connection.commit()
@@ -45,3 +48,4 @@ class Connection:
     def ConnectionClose(self):
         self.server.close()
         self.connection.close()
+        print("Closed")
