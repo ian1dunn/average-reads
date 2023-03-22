@@ -2,11 +2,19 @@
 import random
 import threading
 import tkinter
-from src.AverageReadsMain import validate_sign_in, validate_sign_up, sign_up_new_user, sign_in_user, get_collection_view_data, \
+import sys
+import os
+
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(parent_dir)
+
+import pathlib
+from AverageReadsMain import validate_sign_in, validate_sign_up, sign_up_new_user, sign_in_user, get_collection_view_data, \
     get_collections, read_book, rate_book, add_to_collection, create_collection, remove_from_collection, \
     book_in_collection, get_rating_on_book, delete_collection, change_collection_name, query_search, try_follow_user, \
     get_following, get_user, unfollow_user, get_book, sign_out_user, get_num_books_and_pages
-import pathlib
+
 import tkinter.ttk as ttk
 import pygubu
 

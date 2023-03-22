@@ -1,5 +1,12 @@
-from src.Modules.DBInteraction import Connection
-DATABASE = Connection('./DataCredentials.txt')
+
+import sys
+import os
+
+
+from DBInteraction import Connection
+
+DATABASE = Connection()
+
 USER_ID = 00000000
 # Placeholder validation methods
 def is_valid_email(email: str):
