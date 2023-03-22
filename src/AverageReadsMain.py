@@ -1,5 +1,5 @@
-from Modules.DBInteraction import Connection
-DATABASE = Connection()
+from src.Modules.DBInteraction import Connection
+DATABASE = Connection('./DataCredentials.txt')
 USER_ID = 00000000
 # Placeholder validation methods
 def is_valid_email(email: str):
@@ -29,11 +29,13 @@ def validate_sign_up(email: str, password: str, first_name: str, last_name: str,
 def sign_in_user(email: str, password: str):
     # Do database stuff here to set the current user and record login datetime
     print("User with the email", email, "has been signed in.")
-
+    USER_ID = DATABASE.Query("SELECT user_id from users WHERE email = ''{email}''")
+    print(USER_ID)
 
 def sign_up_new_user(email: str, password: str, first_name: str, last_name: str, username: str):
     # add user to db here
     print("Signed up user with:", email, password, first_name, last_name, username)
+    DATABASE.Query(f"INSERT INTO users(username,email,password,f_name,l_name) OUTPUT INSERTED.user_id  VALUES ({username},{email}, {password}, {first_name}, {last_name}))")
 
 
 def sign_out_user():

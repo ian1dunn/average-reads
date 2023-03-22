@@ -4,7 +4,7 @@ from sshtunnel import SSHTunnelForwarder
 
 class Connection:
     def __init__(self, DataCredFileName: str):
-        with open("DataCredentials.txt", "r") as file:
+        with open("C:\\Users\\Alexb\\PycharmProjects\\average-reads2\\src\\Modules\\DataCredentials.txt", "r") as file:
             username = file.readline()
             password = file.readline()
             dbName = file.readline()
