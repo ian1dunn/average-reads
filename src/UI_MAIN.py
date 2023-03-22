@@ -691,8 +691,9 @@ def main(self: AverageReadsPygubuApp):
     def sign_in(params):
         if type(params) != str:  # signing up
             sign_up_new_user(*params)
-        sign_in_user(params[0])
-
+            sign_in_user(params[0])
+        else:
+            sign_in_user(params)
         self.show_something_else("show_sign_in")
 
         self.email_var.set("")
