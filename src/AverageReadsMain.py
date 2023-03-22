@@ -175,9 +175,24 @@ def try_follow_user(other_email):
     return 0
 
 
-# TODO sort_by will be (Title,Author,Publisher,Genre,Release Year), sort_order will be (Ascending,Descending)
+# TODO sort_by will be (Title,Author,Publisher,Genre,Release Year), sort_order will be (Ascending,Descending) ISSUE #3?
 def get_collections(sort_by, sort_order):
-    return DATABASE.Query(f"SELECT * FROM collection ORDER BY '{sort_by}' '{sort_order}' ")
+    match sort_order:
+        case 'Ascending':
+            sort_order = 'ASC'
+        case 'Descending':
+            sort_order = 'DESC'
+        case _:
+            sort_order = 'ASC'
+    match sort_by:
+        case 'Ascending':
+            return DATABASE.Query(f"SELECT * FROM collection ORDER BY titles {sort_order} ")
+        case 'Descending':
+            sort_by = 'DESC'
+        case _:
+            sort_by = 'ASC'
+    print(sort_order)
+    return DATABASE.Query(f"SELECT * FROM collection ORDER BY {sort_by} {sort_order} ")
 
 
 # TODO I think this will work...

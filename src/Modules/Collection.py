@@ -5,7 +5,7 @@ from enum import Enum
 from src.DataCreation.PremadeData import TITLES
 from GlobalStuff import increment_str
 from ID import ID
-from DBInteraction import Connection
+
 
 class Attributes(Enum):
     collection_id = "collection_id"

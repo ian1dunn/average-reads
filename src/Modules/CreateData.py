@@ -21,7 +21,7 @@ from src.Modules.Rating import Rating
 
 if __name__ == '__main__':
 
-    creationAmounts = 10000
+    creationAmounts = 200
     for i in [User,Reading_Session,Collection,Book]:
         listTmp = []
         for j in range(creationAmounts):
