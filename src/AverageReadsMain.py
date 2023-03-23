@@ -55,7 +55,7 @@ def sign_in_user(email: str):
     # Do database stuff here to set the current user and record login datetime. We assume password is correct.
     global CURRENT_UID
     CURRENT_UID = DATABASE.Query(f"SELECT user_id FROM users WHERE email = '{email}'", fetch_all=False)[0]
-    DATABASE.Query(f"UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE user_id = {CURRENT_UID}")
+    DATABASE.Query(f"UPDATE users SET last_access_date = CURRENT_TIMESTAMP WHERE user_id = {CURRENT_UID}")
     print("User with the UID", CURRENT_UID, "has been signed in.")
 
 
