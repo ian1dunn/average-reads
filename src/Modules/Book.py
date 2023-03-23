@@ -3,8 +3,8 @@ import math
 import random
 from enum import Enum
 from src.DataCreation.PremadeData import TITLES
-from GlobalStuff import increment_str
-from ID import ID
+from src.Modules.GlobalStuff import increment_str
+from src.Modules.ID import ID
 
 
 class Attributes(Enum):
@@ -56,7 +56,7 @@ class Book:
         self.title = title
         self.pages = pages
         self.release_date = release_date
-        #Should I create within the init or as a seperate create probably within init
+        #Should I create within the inait or as a seperate create probably within init
 
 
     @classmethod

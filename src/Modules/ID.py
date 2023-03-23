@@ -1,6 +1,6 @@
 import random
 
-from GlobalStuff import increment_str, INCREMENT_START_CHAR
+from src.Modules.GlobalStuff  import increment_str, INCREMENT_START_CHAR
 
 DEFAULT_ID_LENGTH = 8  # Default Length of the id
 

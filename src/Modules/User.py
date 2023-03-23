@@ -1,10 +1,10 @@
-from datetime import datetime
+from datetime import datetime,timedelta
 import math
 import random
 from enum import Enum
 from src.DataCreation.PremadeData import FIRST_NAMES, LAST_NAMES, EMAIL_DOMAINS
-from GlobalStuff import increment_str
-from ID import ID
+from src.Modules.GlobalStuff  import increment_str
+from src.Modules.ID import ID
 
 
 class Attributes(Enum):
@@ -79,8 +79,16 @@ def generate_password(min_chars=1, max_chars=1, minimum_special=0):
                             ALPHABET_LOWER_DIFFERENCE)
             num_normal_chars -= 1
     return password
-
-
+def random_date(start_date, end_date):
+    delta = end_date - start_date
+    random_days = random.randrange(delta.days)
+    random_seconds = random.randrange(86400)  # 24 * 60 * 60 seconds
+    return start_date + timedelta(days=random_days, seconds=random_seconds)
+def getCreationDate():
+    olddate = datetime.now() - timedelta(days=365*2)
+    return random_date(olddate,datetime.now())
+def getAccessDate(oldDate):
+    return random_date(oldDate,datetime.now())
 class User:
     """
     Class for a user which contains all their basic information.
@@ -102,7 +110,8 @@ class User:
         f_name, l_name = random_name()
         username = generate_username_temporary(f_name, l_name)
         email = username + '@' + random.choice(EMAIL_DOMAINS) + ".com"
-        return User(ID(last_uid), username, generate_password(3, MAX_PASSWORD_LENGTH, MIN_PASSWORD_SPECIAL_CHARS), f_name, l_name, email, datetime.now(), datetime.now())
+        creation = getCreationDate()
+        return User(ID(last_uid), username, generate_password(3, MAX_PASSWORD_LENGTH, MIN_PASSWORD_SPECIAL_CHARS), f_name, l_name, email, creation, getAccessDate(creation))
 
     def __str__(self):
         return f"{str(self.id.__str__()), self.username, self.password, self.f_name, self.l_name, self.email, self.creation_date, self.last_access_date}"

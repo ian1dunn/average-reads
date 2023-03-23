@@ -3,10 +3,9 @@ import math
 import random
 from enum import Enum
 from src.DataCreation.PremadeData import TITLES
-from GlobalStuff import increment_str
-from ID import ID
-from Book import BOOK_TABLE_NAME
-from User import USER_TABLE_NAME
+
+from src.Modules.ID import ID
+
 
 class Attributes(Enum):
     sid = "sid"
@@ -55,10 +54,9 @@ class Reading_Session:
         self.end_page = end_page
 
     @classmethod
-    def generate_random(cls, last_id: str | None):
-        bid,uid = get_Book_User()
-        start,end = getPages()
-        return Reading_Session(ID(last_id), ID(bid), ID(uid), datetime.now(),datetime.now(),start,end)
+    def generate_random(cls, last_id: str | None,startTime,endTime,startPage,EndPage,bid,uid):
+
+        return Reading_Session(ID(last_id), ID(bid), ID(uid), startTime,endTime,startPage,EndPage)
 
     def __str__(self):
         return f"{str(self.id),str(self.uid),str(self.bid), self.session_start, self.session_end, self.start_page,self.end_page}"

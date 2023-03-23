@@ -3,8 +3,8 @@ import math
 import random
 from enum import Enum
 from src.DataCreation.PremadeData import TITLES
-from GlobalStuff import increment_str
-from ID import ID
+from src.Modules.GlobalStuff import increment_str
+from src.Modules.ID import ID
 
 
 class Attributes(Enum):
@@ -40,7 +40,8 @@ class Friendship:
     def generate_random(cls):
         follower_uid,followee_uid = get_UIDS()
         return Friendship(ID(follower_uid), ID(followee_uid), datetime.now())
-
+    def getIds(self):
+        return f"{str(self.follower_uid)},{str(self.followee_uid)}"
     def __str__(self):
         return f"{str(self.follower_uid), str(self.followee_uid), self.date_friended}"
 

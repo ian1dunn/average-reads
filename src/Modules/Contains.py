@@ -3,8 +3,8 @@ import math
 import random
 from enum import Enum
 from src.DataCreation.PremadeData import TITLES
-from GlobalStuff import increment_str
-from ID import ID
+from src.Modules.GlobalStuff import increment_str
+from src.Modules.ID import ID
 
 
 class Attributes(Enum):
@@ -31,7 +31,8 @@ class Contains:
     def __init__(self, collection_id: ID,bid: ID):
         self.collection_id = collection_id
         self.bid = bid
-
+    def getIds(self):
+        return f"{self.collection_id},{self.bid}"
     @classmethod
     def generate_random(cls):
         collection_id,bid = get_IDS()

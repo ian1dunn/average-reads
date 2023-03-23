@@ -1,10 +1,8 @@
-from datetime import datetime
-import math
+
 import random
 from enum import Enum
-from src.DataCreation.PremadeData import TITLES
-from GlobalStuff import increment_str
-from ID import ID
+
+from src.Modules.ID import ID
 
 
 class Attributes(Enum):
@@ -43,7 +41,8 @@ class Rating:
 
     def __str__(self):
         return f"{str(self.uid), str(self.bid), self.rating}"
-
+    def getIDsValue(self):
+        return f"{str(self.uid)},{str(self.bid)}"
     def __iter__(self):
         return iter([str(self.uid), str(self.bid), self.rating])
 
