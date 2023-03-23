@@ -744,9 +744,10 @@ def main(self: AverageReadsPygubuApp):
     def display_user(component: ListComponent):
         self.close_save_frame()
         self.viewing_user_component = component
-        user = get_user(self.viewing_user_component.id)
+        user_id, username, _, f_name, l_name, email, creation_date, _ = get_user(self.viewing_user_component.id)
+
         self.user_details_lc.update_cur_texts(
-            [user.username, user.id, user.f_name, user.l_name, user.email, user.creation_date])
+            [username, user_id, f_name, l_name, email, creation_date])
         self.view_user_frame.show()
         self.save_frame.show(anchor=tkinter.NW, relx=.5, rely=.5, x=-120, y=-300, width=280, height=250)
 
@@ -758,9 +759,9 @@ def main(self: AverageReadsPygubuApp):
 
     def refresh_following():
         # Note, usernames don't automatically refresh
-        self.following_procedural.set_components([ListComponent(label_texts=[""], cur_texts=[user.username],
-                                                                identifier=user.id.value, selected_method=display_user)
-                                                  for user in get_following()])
+        self.following_procedural.set_components([ListComponent(label_texts=[""], cur_texts=[username],
+                                                                identifier=user_id, selected_method=display_user)
+                                                  for user_id, username in get_following()])
 
     def request_sign_in():
         results = validate_sign_in(self.si_email_cw.value(), self.si_password_cw.value())
