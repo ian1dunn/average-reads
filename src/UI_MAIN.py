@@ -4,7 +4,8 @@ import threading
 import tkinter
 
 import pathlib
-from AverageReadsMain import validate_sign_in, validate_sign_up, sign_up_new_user, sign_in_user, get_collection_view_data, \
+from AverageReadsMain import validate_sign_in, validate_sign_up, sign_up_new_user, sign_in_user, \
+    get_collection_view_data, \
     get_collections, read_book, rate_book, add_to_collection, create_collection, remove_from_collection, \
     book_in_collection, get_rating_on_book, delete_collection, change_collection_name, query_search, try_follow_user, \
     get_following, get_user, unfollow_user, get_book, sign_out_user, get_num_books_and_pages, States, process_finished
@@ -139,9 +140,9 @@ class AverageReadsPygubuApp:
     def read_book_pressed(self):
         try:
             e1, e2 = int(self.start_page_entry.get()), int(self.end_page_entry.get())
-            if 0 <= e1 < e2 <= self.viewing_book.pages:
+            if 0 <= e1 < e2 <= self.viewing_book[2]:
                 self.page_number_error.pack_forget()
-                read_book(self.viewing_book.id, e1, e2)
+                read_book(self.viewing_book_component.id, e1, e2)
                 return
         except ValueError:
             pass
@@ -194,7 +195,8 @@ class AverageReadsPygubuApp:
 
     def delete_collection_pressed(self):
         delete_collection(self.viewing_collection_component.id)
-        self.collection_checks_procedural.delete_component(self.collection_checks_procedural.get_by_id(self.viewing_collection_component.id))
+        self.collection_checks_procedural.delete_component(
+            self.collection_checks_procedural.get_by_id(self.viewing_collection_component.id))
         self.collection_procedural.delete_component(self.viewing_collection_component)
         self.viewing_collection_component = None
         self.main_procedural.hide()
@@ -243,7 +245,7 @@ COLLECTION_ERROR_TEXT = "Name Required"
 PASSWORD_INVALID_TEXT = "Your password must contain at least 1 special character."
 
 FOLLOWING_ERROR_TEXTS = (
-"Successfully followed the user.", "No users associated with this email.", "Already following this user.")
+    "Successfully followed the user.", "No users associated with this email.", "Already following this user.")
 
 PRIMARY_COLOR = [
     "#0d0f14",
@@ -531,6 +533,13 @@ def count_total_pages(books):
     return total
 
 
+def db_result_to_str(results: list[tuple]):
+    final_str = ""
+    for result in results:
+        final_str += (", " if len(final_str) > 0 else "") + str(result[0])
+    return final_str
+
+
 def main(self: AverageReadsPygubuApp):
     CWidget.set_builder(self.builder)
     self.sign_in_frame = CWidget("sign_in_frame", expand=True)
@@ -552,10 +561,14 @@ def main(self: AverageReadsPygubuApp):
     self.following_friend_entry = PlaceholderEntry(self.builder.get_object("following_friend_entry"))
     self.rating_text_entry = PlaceholderEntry(self.builder.get_object("rating_text_entry"))
 
-    self.main_procedural = ProceduralScroller("main_scroller", component_master=self.results_frame.widget, side=tkinter.LEFT, expand=True, fill=tkinter.BOTH)
-    self.following_procedural = ProceduralScroller("following_scroller", component_master=self.builder.get_object("inner_following_frame"))
-    self.collection_procedural = ProceduralScroller("collection_scroller", component_master=self.builder.get_object("collection_quick_frame"))
-    self.collection_checks_procedural = ProceduralScroller("save_scroller", expand=tkinter.TRUE, fill=tkinter.BOTH, padx=10)
+    self.main_procedural = ProceduralScroller("main_scroller", component_master=self.results_frame.widget,
+                                              side=tkinter.LEFT, expand=True, fill=tkinter.BOTH)
+    self.following_procedural = ProceduralScroller("following_scroller",
+                                                   component_master=self.builder.get_object("inner_following_frame"))
+    self.collection_procedural = ProceduralScroller("collection_scroller",
+                                                    component_master=self.builder.get_object("collection_quick_frame"))
+    self.collection_checks_procedural = ProceduralScroller("save_scroller", expand=tkinter.TRUE, fill=tkinter.BOTH,
+                                                           padx=10)
 
     self.start_page_entry = self.builder.get_object("start_page_entry")
     self.end_page_entry = self.builder.get_object("end_page_entry")
@@ -571,7 +584,8 @@ def main(self: AverageReadsPygubuApp):
     self.username_cw = CWidget("su_un_frame", variable=self.username_var)
 
     self.details_lc = ListComponent(self.builder.get_object("details_frame"), BOOK_COMPONENTS, width=500, cursor="")
-    self.user_details_lc = ListComponent(self.builder.get_object("user_contents_scrolled").innerframe, USER_COMPONENTS, width=200, cursor="")
+    self.user_details_lc = ListComponent(self.builder.get_object("user_contents_scrolled").innerframe, USER_COMPONENTS,
+                                         width=200, cursor="")
 
     self.viewing_book_component = None
     self.viewing_book = None
@@ -584,18 +598,18 @@ def main(self: AverageReadsPygubuApp):
     def view_book(component):
         # Set Previous Rating by the user in rating_text_entry spot
         self.viewing_book_component = component
-        book = get_book(component.id)
-        self.viewing_book = book
+        book_data, genre_data, rating, author_data, publisher_data, audience_data, release_date = get_book(component.id)
+        self.viewing_book = book_data
         self.details_lc.update_cur_texts(
-            [book.title, book.genres, book.pages, book.rating,
-             book.authors, book.publishers,
-             book.audience, book.release_date])
+            [book_data[1], db_result_to_str(genre_data), book_data[2], rating,
+             db_result_to_str(author_data), db_result_to_str(publisher_data),
+             db_result_to_str(audience_data), release_date])
         self.removed_from_collection = False
 
-        self.rating_text_entry.set_text(get_rating_on_book(book.id))
+        self.rating_text_entry.set_text(get_rating_on_book(component.id))
 
         for checkbox in self.collection_checks_procedural.components:
-            checkbox.force_state(book_in_collection(self.viewing_book.id, checkbox.id))
+            checkbox.force_state(book_in_collection(self.viewing_book_component.id, checkbox.id))
 
         self.main_procedural.hide()
         self.book_view_frame.show()
@@ -606,15 +620,21 @@ def main(self: AverageReadsPygubuApp):
         self.book_view_frame.hide()
         self.close_save_frame()
         self.collection_info_frame.show()
-        collection_name, collection_books = get_collection_view_data(component.id)
+        collection_name, collection_books = get_collection_view_data(component.id, self.sort_by_var.get(),
+                                                                     self.sort_order_var.get())
         self.results_text_var.set(COLLECTION_CONTENT_TEXT)
         self.collection_view_name_entry.set_text(collection_name)
 
         self.main_procedural.set_components([ListComponent(label_texts=BOOK_COMPONENTS, width=500,
-                                                           selected_method=view_book, identifier=book.id,
-                                                           cur_texts=[book.title, book.genres, book.pages, book.rating,
-                                                                      book.authors, book.publishers,
-                                                                      book.audience, book.release_date]) for book in
+                                                           selected_method=view_book, identifier=book_data[0],
+                                                           cur_texts=[book_data[1], db_result_to_str(genre_data),
+                                                                      book_data[2], rating,
+                                                                      db_result_to_str(author_data),
+                                                                      db_result_to_str(publisher_data),
+                                                                      db_result_to_str(audience_data), release_date])
+                                             for
+                                             book_data, genre_data, rating, author_data, publisher_data, audience_data, release_date
+                                             in
                                              collection_books])
 
     def toggle_book_in_collection_state(checkbox_component: CheckboxComponent):
@@ -627,7 +647,7 @@ def main(self: AverageReadsPygubuApp):
         self.refresh_collections(True)
 
     def refresh_collections(toggled_state=False):
-        collections = get_collections(self.sort_by_var.get(), self.sort_order_var.get())
+        collections = get_collections()
 
         collection_components = []
         checkbox_components = []
@@ -639,10 +659,11 @@ def main(self: AverageReadsPygubuApp):
                                                        cur_texts=[collection.collection_name, num_books, pages],
                                                        selected_method=view_collection))
             if not toggled_state:
-                checkbox_components.append(CheckboxComponent(identifier=collection.collection_id.value, text=collection.collection_name,
-                                                             checked=False if not self.viewing_book_component else book_in_collection(
-                                                                 self.viewing_book_component.id, collection.collection_id.value),
-                                                             selected_method=toggle_book_in_collection_state))
+                checkbox_components.append(
+                    CheckboxComponent(identifier=collection.collection_id.value, text=collection.collection_name,
+                                      checked=False if not self.viewing_book_component else book_in_collection(
+                                          self.viewing_book_component.id, collection.collection_id.value),
+                                      selected_method=toggle_book_in_collection_state))
 
         self.collection_procedural.set_components(collection_components)
         if not toggled_state:
@@ -667,10 +688,15 @@ def main(self: AverageReadsPygubuApp):
         self.results_text_var.set(SEARCH_RESULT_TEXT + str(len(results)))
 
         self.main_procedural.set_components([ListComponent(label_texts=BOOK_COMPONENTS, width=500,
-                                                 selected_method=view_book, identifier=book.id,
-                                                 cur_texts=[book.title, book.genres, book.pages, book.rating,
-                                                            book.authors, book.publishers,
-                                                            book.audience, book.release_date]) for book in
+                                                           selected_method=view_book, identifier=book_data[0],
+                                                           cur_texts=[book_data[1], db_result_to_str(genre_data),
+                                                                      book_data[2], rating,
+                                                                      db_result_to_str(author_data),
+                                                                      db_result_to_str(publisher_data),
+                                                                      db_result_to_str(audience_data), release_date])
+                                             for
+                                             book_data, genre_data, rating, author_data, publisher_data, audience_data, release_date
+                                             in
                                              results])
 
         self.book_view_frame.hide()
@@ -719,7 +745,8 @@ def main(self: AverageReadsPygubuApp):
         self.close_save_frame()
         self.viewing_user_component = component
         user = get_user(self.viewing_user_component.id)
-        self.user_details_lc.update_cur_texts([user.username, user.id, user.f_name, user.l_name, user.email, user.creation_date])
+        self.user_details_lc.update_cur_texts(
+            [user.username, user.id, user.f_name, user.l_name, user.email, user.creation_date])
         self.view_user_frame.show()
         self.save_frame.show(anchor=tkinter.NW, relx=.5, rely=.5, x=-120, y=-300, width=280, height=250)
 
@@ -753,7 +780,8 @@ def main(self: AverageReadsPygubuApp):
             sign_in(self.si_email_cw.value())
 
     def request_sign_up():
-        results = validate_sign_up(self.su_email_cw.value(), self.su_password_cw.value(), self.first_name_cw.value(), self.last_name_cw.value(), self.username_cw.value())
+        results = validate_sign_up(self.su_email_cw.value(), self.su_password_cw.value(), self.first_name_cw.value(),
+                                   self.last_name_cw.value(), self.username_cw.value())
         if results[0] == States.INVALID:
             self.su_email_cw.set_error_text("Please enter a valid email address.")
         elif results[0] == States.EXISTS:
@@ -783,8 +811,10 @@ def main(self: AverageReadsPygubuApp):
         else:
             self.username_cw.hide_error()
 
-        if results[0] == States.VALID and results[1] == States.VALID and results[2] == States.VALID and results[3] == States.VALID and results[4] == States.VALID:
-            sign_in((self.si_email_cw.value(), self.si_password_cw.value(), self.first_name_cw.value(), self.last_name_cw.value(), self.username_cw.value()))
+        if results[0] == States.VALID and results[1] == States.VALID and results[2] == States.VALID and results[
+            3] == States.VALID and results[4] == States.VALID:
+            sign_in((self.si_email_cw.value(), self.si_password_cw.value(), self.first_name_cw.value(),
+                     self.last_name_cw.value(), self.username_cw.value()))
 
     self.setup_collections = refresh_collections
     self.refresh_collections = refresh_collections
