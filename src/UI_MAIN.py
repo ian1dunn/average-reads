@@ -652,17 +652,17 @@ def main(self: AverageReadsPygubuApp):
         collection_components = []
         checkbox_components = []
 
-        for collection in collections:
-            num_books, pages = get_num_books_and_pages(collection.collection_id.value)
+        for name, c_id in collections:
+            num_books, pages = get_num_books_and_pages(c_id)
             collection_components.append(ListComponent(label_texts=COLLECTION_COMPONENTS,
-                                                       identifier=collection.collection_id.value,
-                                                       cur_texts=[collection.collection_name, num_books, pages],
+                                                       identifier=c_id,
+                                                       cur_texts=[name, num_books, pages],
                                                        selected_method=view_collection))
             if not toggled_state:
                 checkbox_components.append(
-                    CheckboxComponent(identifier=collection.collection_id.value, text=collection.collection_name,
+                    CheckboxComponent(identifier=c_id, text=name,
                                       checked=False if not self.viewing_book_component else book_in_collection(
-                                          self.viewing_book_component.id, collection.collection_id.value),
+                                          self.viewing_book_component.id, c_id),
                                       selected_method=toggle_book_in_collection_state))
 
         self.collection_procedural.set_components(collection_components)
