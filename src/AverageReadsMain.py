@@ -74,13 +74,37 @@ def sign_out_user():
     print("User has been signed out.")
 
 
-################################################### SQL DATA METHODS ###################################################
+def string_to_db_date(string):
+    # Dates in the db are in the format yyyy-mm-dd
+    # Normal dates are usually in the format mm/dd/yyyy
+    # This function converts the normal date to the db date
+    split_datas = string.replace(" ", "").replace("/", "-").split("-")
+    if len(split_datas) > 3 or len(split_datas) == 0 or (len(split_datas[0]) != 4 and len(split_datas[-1]) != 4):
+        return "0000000000"
 
+    year, month, day = "", "", ""
+
+    for s in split_datas:
+        if len(s) < 4:
+            if len(month) == 0:
+                month = s
+            else:
+                day = s
+        else:
+            year = s
+
+    month = "0" + month if len(month) == 1 else month
+    day = "0" + day if len(day) == 1 else day
+
+    if len(month) == 0:
+        return f"{year}"
+
+    return f"{year}-{month}-{day}"
+################################################### SQL DATA METHODS ###################################################
 # TODO idk exactly what the format of the time should be
 def read_book(book_id, start_page, end_page):
     end_time = datetime.datetime.now()
     start_time = end_time - datetime.timedelta(seconds=(end_page - start_page) * random.randint(30, 60))
-
     DATABASE.Query(
         f"INSERT INTO reading_session (user_id,book_id,session_start,session_end,start_page,end_page) VALUES ({CURRENT_UID},{book_id},'{start_time}','{end_time}', {start_page}, {end_page})")
 
@@ -96,7 +120,7 @@ def rate_book(book_id, rating):
 
 
 def add_to_collection(book_id, collection_id):
-    DATABASE.Query(f"INSERT INTO contains (collection_id, bid) VALUES ({collection_id},{book_id})")
+    DATABASE.Query(f"INSERT INTO contains (collection_id, book_id) VALUES ({collection_id},{book_id})")
 
 
 def remove_from_collection(book_id, collection_id):
@@ -104,15 +128,16 @@ def remove_from_collection(book_id, collection_id):
 
 
 def delete_collection(collection_id):
-    DATABASE.Query(f"DELETE FROM contains WHERE collection_id = {collection_id}")
+    DATABASE.Query(f"DELETE FROM contains WHERE collection_id = {collection_id}") # Delete all books from the collection
+    DATABASE.Query(f"DELETE FROM collection WHERE collection_id = {collection_id}") # Delete the collection
 
 
 def get_rating_on_book(book_id):
     # Book local rating
-    return \
-        DATABASE.Query(f"SELECT rating FROM rating WHERE user_id = {CURRENT_UID} AND book_id = {book_id}",
-                       fetch_all=False)[
-            0]
+    result = DATABASE.Query(f"SELECT rating FROM rating WHERE user_id = {CURRENT_UID} AND book_id = {book_id}",
+                       fetch_all=False)
+
+    return round(float(result[0]), 1) if result is not None else ""
 
 
 def book_in_collection(book_id, collection_id):
@@ -121,13 +146,13 @@ def book_in_collection(book_id, collection_id):
 
 
 def get_book(book_id):
+    rating = DATABASE.Query(f"SELECT AVG(rating.rating) FROM rating WHERE rating.book_id = {book_id}", fetch_all=False)
     return (DATABASE.Query(f"SELECT book.book_id, book.title, book.pages FROM book WHERE book.book_id = {book_id}",
                            fetch_all=False),  # gets book id title and pages
             DATABASE.Query(
                 f"SELECT genre.g_name FROM genre where genre.genre_id IN (SELECT BG.genre_id FROM book AS B INNER JOIN book_genres AS BG ON B.book_id = BG.book_id where B.book_id = {book_id})"),
             # gets genre names attached to book
-            DATABASE.Query(f"SELECT AVG(rating.rating) FROM rating WHERE rating.book_id = {book_id}", fetch_all=False)[
-                0],  # gets average rating of book
+            round(float(rating[0]), 1) if rating is not None else "",  # gets average rating of book
             DATABASE.Query(
                 f"SELECT contributors.c_name FROM contributors where contributors.contributor_id IN (SELECT A.contributor_id from author AS A INNER JOIN book AS B ON B.book_id = A.book_id WHERE B.book_id = {book_id})"),
             # gets author names attached to book
@@ -143,8 +168,6 @@ def get_book(book_id):
 
 def get_collection_view_data(collection_id, sort_by, sort_order):
     # Get data from collection in db and return it
-    # return(DATABASE.Query(f"SELECT collection_name FROM collection WHERE collection_id = {collection_id}", fetch_all=False)[0],
-    # [get_book(book_id[0]) for book_id in DATABASE.Query(f"SELECT book_id FROM contains WHERE collection_id = {collection_id}")])
     sort_order = "ASC" if sort_order == "Ascending" else "DESC"
     sort_by = "book.title" if sort_by == "Title" else "book_model.release_date" if sort_by == "Release Year" else "genre.g_name" if sort_by == "Genre" else "contributors.c_name" if sort_by == "Author" else "publisher.c_name"
 
@@ -154,11 +177,13 @@ def get_collection_view_data(collection_id, sort_by, sort_order):
                                         INNER JOIN contributors AS C ON (publisher.contributor_id = C.contributor_id) \
                                         INNER JOIN book_genres ON (book_genres.book_id = book.book_id) \
                                         INNER JOIN genre ON (genre.genre_id = book_genres.genre_id) \
+                                        INNER JOIN book_model ON (book_model.book_id = book.book_id) \
                                         INNER JOIN contains ON (contains.book_id = book.book_id) WHERE contains.collection_id = {collection_id} ORDER BY {sort_by} {sort_order}")
 
     return (
-    DATABASE.Query(f"SELECT collection_name FROM collection WHERE collection_id = {collection_id}", fetch_all=False)[0],
-    [get_book(book_id[0]) for book_id in book_id_tuple])
+        DATABASE.Query(f"SELECT collection_name FROM collection WHERE collection_id = {collection_id}",
+                       fetch_all=False)[0],
+        [get_book(book_id[0]) for book_id in book_id_tuple])
 
 
 def create_collection(collection_name):
@@ -182,18 +207,21 @@ def query_search(query, filter_by, sort_by, sort_order):
     sort_by = "book.title" if sort_by == "Title" else "book_model.release_date" if sort_by == "Release Year" else "genre.g_name" if sort_by == "Genre" else "contributors.c_name" if sort_by == "Author" else "publisher.c_name"
     filter_by = "book.title" if filter_by == "Title" else "book_model.release_date" if filter_by == "Release Year" else "genre.g_name" if filter_by == "Genre" else "contributors.c_name" if filter_by == "Author" else "publisher.c_name"
 
+    query_end = f"{filter_by} LIKE'%{query}%'" if filter_by != "book_model.release_date" else f"CAST({filter_by} AS char(10)) LIKE '%{string_to_db_date(query)}%'"
     book_id_tuple = DATABASE.Query(f"SELECT book.book_id FROM book INNER JOIN author on (book.book_id = author.book_id) \
                                         INNER JOIN contributors ON (author.contributor_id = contributors.contributor_id) \
                                         INNER JOIN publisher ON (book.book_id = publisher.book_id) \
                                         INNER JOIN contributors AS C ON (publisher.contributor_id = C.contributor_id) \
                                         INNER JOIN book_genres ON (book_genres.book_id = book.book_id) \
-                                        INNER JOIN genre ON (genre.genre_id = book_genres.genre_id) WHERE {filter_by} LIKE '%{query}%' ORDER BY {sort_by} {sort_order}")
+                                        INNER JOIN book_model ON (book_model.book_id = book.book_id) \
+                                        INNER JOIN genre ON (genre.genre_id = book_genres.genre_id) WHERE {query_end} ORDER BY {sort_by} {sort_order}")
     return [get_book(book_id[0]) for book_id in book_id_tuple]
 
 
 def get_following():
     # Get a list of the users, this person is following
-    return DATABASE.Query(f"SELECT followee_uid, u.username FROM friend INNER join users u on friend.followee_uid = u.user_id where follower_uid = {CURRENT_UID}")
+    return DATABASE.Query(
+        f"SELECT followee_uid, u.username FROM friend INNER join users u on friend.followee_uid = u.user_id where follower_uid = {CURRENT_UID}")
 
 
 def get_user(uid):
@@ -240,6 +268,4 @@ def process_finished():
 
 # Test here.
 if __name__ == '__main__':
-    CURRENT_UID = 200
-    print(get_num_books_and_pages(48))
     DATABASE.ConnectionClose()
