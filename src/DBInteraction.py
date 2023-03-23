@@ -39,6 +39,10 @@ class Connection:
                 results = cur.fetchall()
             else:
                 results = cur.fetchone()
+            
+            if "RETURNING" in query:
+                # If we are returning data, we need to commit our changes
+                self.connection.commit()
         else:
             # Made a change to the database, let's commit our changes
             self.connection.commit()
@@ -49,3 +53,5 @@ class Connection:
         self.server.close()
         self.connection.close()
         print("Closed")
+
+

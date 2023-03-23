@@ -5,7 +5,7 @@ from enum import Enum
 from src.DataCreation.PremadeData import FIRST_NAMES, LAST_NAMES, EMAIL_DOMAINS
 from GlobalStuff import increment_str
 from ID import ID
-from DBInteraction import Connection
+
 
 class Attributes(Enum):
     uid = "uid"

@@ -5,7 +5,7 @@ from enum import Enum
 from src.DataCreation.PremadeData import TITLES
 from GlobalStuff import increment_str
 from ID import ID
-from DBInteraction import Connection
+
 
 class Attributes(Enum):
     bid = "bid"
@@ -34,8 +34,8 @@ def generate_title(title: str):
     :return: a unique username based on a user's first and last name. Uses values in the database to ensure unique.
     """
     cur_str = random_Title().lower()
-    matches = select_from_table(BOOK_TABLE_NAME, Attributes.title.value, TITLES_SELECTION_CONDITION + cur_str + "%")
-    return cur_str + increment_str(matches[-1][3:]) if matches else cur_str
+    #matches = select_from_table(BOOK_TABLE_NAME, Attributes.title.value, TITLES_SELECTION_CONDITION + cur_str + "%")
+    return cur_str #+ increment_str(matches[-1][3:]) if matches else cur_str
 
 def generate_title_temporary(title: str):
     cur_str = random_Title().lower()
