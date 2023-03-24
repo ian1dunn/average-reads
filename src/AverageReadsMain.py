@@ -208,10 +208,9 @@ def query_search(query, filter_by, sort_by, sort_order):
     filter_by = "book.title" if filter_by == "Title" else "book_model.release_date" if filter_by == "Release Year" else "genre.g_name" if filter_by == "Genre" else "contributors.c_name" if filter_by == "Author" else "publisher.c_name"
 
     query_end = f"{filter_by} LIKE'%{query}%'" if filter_by != "book_model.release_date" else f"CAST({filter_by} AS char(10)) LIKE '%{string_to_db_date(query)}%'"
-    book_id_tuple = DATABASE.Query(f"SELECT book.book_id FROM book INNER JOIN author on (book.book_id = author.book_id) \
-                                        INNER JOIN contributors ON (author.contributor_id = contributors.contributor_id) \
+    book_id_tuple = DATABASE.Query(f"SELECT DISTINCT book.book_id, {sort_by} FROM book INNER JOIN author on (book.book_id = author.book_id) \
                                         INNER JOIN publisher ON (book.book_id = publisher.book_id) \
-                                        INNER JOIN contributors AS C ON (publisher.contributor_id = C.contributor_id) \
+                                        INNER JOIN contributors ON (author.contributor_id = contributors.contributor_id OR publisher.contributor_id = contributors.contributor_id) \
                                         INNER JOIN book_genres ON (book_genres.book_id = book.book_id) \
                                         INNER JOIN book_model ON (book_model.book_id = book.book_id) \
                                         INNER JOIN genre ON (genre.genre_id = book_genres.genre_id) WHERE {query_end} ORDER BY {sort_by} {sort_order}")

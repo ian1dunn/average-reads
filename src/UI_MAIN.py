@@ -360,7 +360,7 @@ class ListComponent:
 
         idx = 0
         for txt in self.texts:
-            self.labels.append(ttk.Label(frame, text=txt + str(self.cur_texts[idx]), style="Header2Bk3.TLabel"))
+            self.labels.append(ttk.Label(frame, text=txt + str(self.cur_texts[idx]), style="Header2Bk3.TLabel", wraplength=self.width*2))
             if self.selected_method:
                 self.labels[-1].bind(MOUSE_1, self._selected)
             self.labels[-1].pack(anchor=tkinter.NW, fill=tkinter.X)
