@@ -168,17 +168,22 @@ def get_book(book_id):
 
 def get_collection_view_data(collection_id, sort_by, sort_order):
     # Get data from collection in db and return it
+    print((collection_id, sort_by, sort_order))
     sort_order = "ASC" if sort_order == "Ascending" else "DESC"
     sort_by = "book.title" if sort_by == "Title" else "book_model.release_date" if sort_by == "Release Year" else "genre.g_name" if sort_by == "Genre" else "contributors.c_name" if sort_by == "Author" else "publisher.c_name"
 
-    book_id_tuple = DATABASE.Query(f"SELECT book.book_id FROM book INNER JOIN author on (book.book_id = author.book_id) \
-                                        INNER JOIN contributors ON (author.contributor_id = contributors.contributor_id) \
-                                        INNER JOIN publisher ON (book.book_id = publisher.book_id) \
-                                        INNER JOIN contributors AS C ON (publisher.contributor_id = C.contributor_id) \
-                                        INNER JOIN book_genres ON (book_genres.book_id = book.book_id) \
-                                        INNER JOIN genre ON (genre.genre_id = book_genres.genre_id) \
-                                        INNER JOIN book_model ON (book_model.book_id = book.book_id) \
-                                        INNER JOIN contains ON (contains.book_id = book.book_id) WHERE contains.collection_id = {collection_id} ORDER BY {sort_by} {sort_order}")
+    book_id_tuple = DATABASE.Query(f"SELECT book_info.book_id FROM \
+                                        (SELECT DISTINCT book.book_id, book.title FROM book INNER JOIN author on (book.book_id = author.book_id) \
+                                            INNER JOIN contributors ON (author.contributor_id = contributors.contributor_id) \
+                                            INNER JOIN publisher ON (book.book_id = publisher.book_id) \
+                                            INNER JOIN contributors AS C ON (publisher.contributor_id = C.contributor_id) \
+                                            INNER JOIN book_genres ON (book_genres.book_id = book.book_id) \
+                                            INNER JOIN genre ON (genre.genre_id = book_genres.genre_id) \
+                                            INNER JOIN book_model ON (book_model.book_id = book.book_id) \
+                                            INNER JOIN contains ON (contains.book_id = book.book_id) \
+                                            WHERE contains.collection_id = {collection_id} \
+                                            ORDER BY {sort_by} {sort_order}) \
+                                        AS book_info")
 
     return (
         DATABASE.Query(f"SELECT collection_name FROM collection WHERE collection_id = {collection_id}",
