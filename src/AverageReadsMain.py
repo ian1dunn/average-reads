@@ -150,17 +150,17 @@ def get_book(book_id):
     return (DATABASE.Query(f"SELECT book.book_id, book.title, book.pages FROM book WHERE book.book_id = {book_id}",
                            fetch_all=False),  # gets book id title and pages
             DATABASE.Query(
-                f"SELECT genre.g_name FROM genre where genre.genre_id IN (SELECT BG.genre_id FROM book AS B INNER JOIN book_genres AS BG ON B.book_id = BG.book_id where B.book_id = {book_id})"),
+                f"SELECT genre.g_name FROM genre where genre.genre_id IN (SELECT BG.genre_id FROM book AS B INNER JOIN book_genres AS BG ON B.book_id = BG.book_id where B.book_id = {book_id}) ORDER BY genre.g_name"),
             # gets genre names attached to book
-            round(float(rating[0]), 1) if rating is not None else "",  # gets average rating of book
+            round(float(rating[0]), 1) if rating is not None and rating[0] is not None else "",  # gets average rating of book
             DATABASE.Query(
-                f"SELECT contributors.c_name FROM contributors where contributors.contributor_id IN (SELECT A.contributor_id from author AS A INNER JOIN book AS B ON B.book_id = A.book_id WHERE B.book_id = {book_id})"),
+                f"SELECT contributors.c_name FROM contributors where contributors.contributor_id IN (SELECT A.contributor_id from author AS A INNER JOIN book AS B ON B.book_id = A.book_id WHERE B.book_id = {book_id}) ORDER BY contributors.c_name"),
             # gets author names attached to book
             DATABASE.Query(
-                f"SELECT contributors.c_name FROM contributors WHERE contributors.contributor_id IN (SELECT P.contributor_id FROM publisher AS P INNER JOIN book AS B ON B.book_id = P.book_id WHERE B.book_id = {book_id})"),
+                f"SELECT contributors.c_name FROM contributors WHERE contributors.contributor_id IN (SELECT P.contributor_id FROM publisher AS P INNER JOIN book AS B ON B.book_id = P.book_id WHERE B.book_id = {book_id}) ORDER BY contributors.c_name"),
             # gets publisher names attached to book
             DATABASE.Query(
-                f"SELECT audience.a_name FROM audience WHERE audience.audience_id IN (SELECT AB.audience_id FROM appeal_to_book as AB INNER JOIN book AS B ON B.book_id = AB.book_id WHERE B.book_id = {book_id})"),
+                f"SELECT audience.a_name FROM audience WHERE audience.audience_id IN (SELECT AB.audience_id FROM appeal_to_book as AB INNER JOIN book AS B ON B.book_id = AB.book_id WHERE B.book_id = {book_id}) ORDER BY audience.a_name"),
             # gets audience name attached to book
             DATABASE.Query(f"SELECT MIN(book_model.release_date) FROM book_model WHERE book_model.book_id = {book_id}",
                            fetch_all=False)[0])  # gets min release date of book
@@ -168,7 +168,6 @@ def get_book(book_id):
 
 def get_collection_view_data(collection_id, sort_by, sort_order):
     # Get data from collection in db and return it
-    print((collection_id, sort_by, sort_order))
     sort_order = "ASC" if sort_order == "Ascending" else "DESC"
     sort_by = "book.title" if sort_by == "Title" else "book_model.release_date" if sort_by == "Release Year" else "genre.g_name" if sort_by == "Genre" else "contributors.c_name" if sort_by == "Author" else "publisher.c_name"
 
@@ -212,13 +211,19 @@ def query_search(query, filter_by, sort_by, sort_order):
     sort_by = "book.title" if sort_by == "Title" else "book_model.release_date" if sort_by == "Release Year" else "genre.g_name" if sort_by == "Genre" else "contributors.c_name" if sort_by == "Author" else "publisher.c_name"
     filter_by = "book.title" if filter_by == "Title" else "book_model.release_date" if filter_by == "Release Year" else "genre.g_name" if filter_by == "Genre" else "contributors.c_name" if filter_by == "Author" else "publisher.c_name"
 
+    print((query, filter_by, sort_by, sort_order))
+
     query_end = f"{filter_by} LIKE'%{query}%'" if filter_by != "book_model.release_date" else f"CAST({filter_by} AS char(10)) LIKE '%{string_to_db_date(query)}%'"
-    book_id_tuple = DATABASE.Query(f"SELECT DISTINCT book.book_id, {sort_by} FROM book INNER JOIN author on (book.book_id = author.book_id) \
+    book_id_tuple = DATABASE.Query(f"SELECT DISTINCT book.book_id, MIN({sort_by}) FROM book \
+                                        INNER JOIN author on (book.book_id = author.book_id) \
                                         INNER JOIN publisher ON (book.book_id = publisher.book_id) \
                                         INNER JOIN contributors ON (author.contributor_id = contributors.contributor_id OR publisher.contributor_id = contributors.contributor_id) \
                                         INNER JOIN book_genres ON (book_genres.book_id = book.book_id) \
                                         INNER JOIN book_model ON (book_model.book_id = book.book_id) \
-                                        INNER JOIN genre ON (genre.genre_id = book_genres.genre_id) WHERE {query_end} ORDER BY {sort_by} {sort_order}")
+                                        INNER JOIN genre ON (genre.genre_id = book_genres.genre_id) \
+                                        WHERE {query_end} \
+                                        GROUP BY book.book_id \
+                                        ORDER BY MIN({sort_by}) {sort_order}")
     return [get_book(book_id[0]) for book_id in book_id_tuple]
 
 
