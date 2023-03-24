@@ -24,7 +24,7 @@ fourYears = datetime.datetime.now() - datetime.timedelta(days=365*4)
 def getBooks():
     books = []
     count = 0
-    with open("C:\\Users\\Alexb\\PycharmProjects\\average-reads2\\src\\Modules\\data\\booksdata.csv", 'r') as f:
+    with open("/src/Modules/data/booksdata.csv", 'r') as f:
         csv_reader = csv.reader(f)
         for row in csv_reader:
             if(row[0]=='Title'):
@@ -169,25 +169,25 @@ def objectContains(list,objectToTest):
     return False
 totalCollections,totalContains = getCollections(50)
 print("Collections/Contains done")
-with open("./data/ContainsAlex.csv", "w") as stream:
+with open("Contains.csv", "w") as stream:
     writer = csv.writer(stream)
     writer.writerows(totalContains)
-with open("./data/UserAlex.csv", "w") as stream:
+with open("User.csv", "w") as stream:
     writer = csv.writer(stream)
     writer.writerows(totalUsers)
-with open("./data/BookAlex.csv", "w") as stream:
+with open("Book.csv", "w") as stream:
     writer = csv.writer(stream)
     writer.writerows(totalBooks)
-with open("./data/FriendAlex.csv", "w") as stream:
+with open("Friend.csv", "w") as stream:
     writer = csv.writer(stream)
     writer.writerows(totalFriends)
-with open("./data/CollectionAlex.csv", "w") as stream:
+with open("Collection.csv", "w") as stream:
     writer = csv.writer(stream)
     writer.writerows(totalCollections)
-with open("./data/ReadingSessionsAlex.csv", "w") as stream:
+with open("ReadingSessions.csv", "w") as stream:
     writer = csv.writer(stream)
     writer.writerows(totalReadingSession)
-with open("./data/RatingAlex.csv", "w") as stream:
+with open("Rating.csv", "w") as stream:
     writer = csv.writer(stream)
     writer.writerows(totalRatings)
 

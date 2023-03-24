@@ -18,7 +18,7 @@ def getWord():
     return word[:len(word)-1]
 
 collection = []
-with open("C:\\Users\\Alexb\\PycharmProjects\\average-reads2\\src\\Modules\\data\\data\\CollectionAlex.csv", 'r') as f:
+with open("/src/Modules/data/CollectionAlex.csv", 'r') as f:
     csv_reader = csv.reader(f)
 
     for row in csv_reader:
@@ -27,6 +27,6 @@ with open("C:\\Users\\Alexb\\PycharmProjects\\average-reads2\\src\\Modules\\data
         newRow = row
         newRow[2] = getWord()
         collection.append(newRow)
-with open("./CollectionAlexer.csv", "w") as stream:
+with open("CollectionAlexer.csv", "w") as stream:
     writer = csv.writer(stream)
     writer.writerows(collection)
