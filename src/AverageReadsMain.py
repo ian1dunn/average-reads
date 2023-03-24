@@ -211,8 +211,6 @@ def query_search(query, filter_by, sort_by, sort_order):
     sort_by = "book.title" if sort_by == "Title" else "book_model.release_date" if sort_by == "Release Year" else "genre.g_name" if sort_by == "Genre" else "contributors.c_name" if sort_by == "Author" else "publisher.c_name"
     filter_by = "book.title" if filter_by == "Title" else "book_model.release_date" if filter_by == "Release Year" else "genre.g_name" if filter_by == "Genre" else "contributors.c_name" if filter_by == "Author" else "publisher.c_name"
 
-    print((query, filter_by, sort_by, sort_order))
-
     query_end = f"{filter_by} LIKE'%{query}%'" if filter_by != "book_model.release_date" else f"CAST({filter_by} AS char(10)) LIKE '%{string_to_db_date(query)}%'"
     book_id_tuple = DATABASE.Query(f"SELECT DISTINCT book.book_id, MIN({sort_by}) FROM book \
                                         INNER JOIN author on (book.book_id = author.book_id) \
