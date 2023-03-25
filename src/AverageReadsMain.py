@@ -124,7 +124,7 @@ def add_to_collection(book_id, collection_id):
 
 
 def remove_from_collection(book_id, collection_id):
-    DATABASE.Query(f"DELETE FROM contains WHERE collection_id = {collection_id} AND bid = {book_id}")
+    DATABASE.Query(f"DELETE FROM contains WHERE collection_id = {collection_id} AND book_id = {book_id}")
 
 
 def delete_collection(collection_id):
