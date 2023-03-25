@@ -208,20 +208,43 @@ def change_collection_name(collection_id, name):
 # sort_order is one of these strings (Ascending,Descending)
 def query_search(query, filter_by, sort_by, sort_order):
     sort_order = "ASC" if sort_order == "Ascending" else "DESC"
-    sort_by = "book.title" if sort_by == "Title" else "book_model.release_date" if sort_by == "Release Year" else "genre.g_name" if sort_by == "Genre" else "contributors.c_name" if sort_by == "Author" else "publisher.c_name"
-    filter_by = "book.title" if filter_by == "Title" else "book_model.release_date" if filter_by == "Release Year" else "genre.g_name" if filter_by == "Genre" else "contributors.c_name" if filter_by == "Author" else "publisher.c_name"
+    sort_by = "book.title" if sort_by == "Title" else "book_model.release_date" if sort_by == "Release Year" else "genre.g_name" if sort_by == "Genre" else "Author" if sort_by == "Author" else "Publisher"
+    filter_by = "book.title" if filter_by == "Title" else "book_model.release_date" if filter_by == "Release Year" else "genre.g_name" if filter_by == "Genre" else "Author" if filter_by == "Author" else "Publisher"
+
+    contributor_query = ""
+    add_author_table = False
+    add_publisher_table = False
+
+    if filter_by == "Author":
+        add_author_table = True
+        filter_by = "contributors1.c_name"
+    elif filter_by == "Publisher":
+        add_publisher_table = True
+        filter_by = "contributors2.c_name"
+
+    if sort_by == "Author":
+        add_author_table = True
+        sort_by = "contributors1.c_name"
+    elif sort_by == "Publisher":
+        add_publisher_table = True
+        sort_by = "contributors2.c_name"
+
+    if add_author_table:
+        contributor_query += f"INNER JOIN author on (book.book_id = author.book_id) \
+                             INNER JOIN contributors AS contributors1 ON (author.contributor_id = contributors1.contributor_id)"
+    if add_publisher_table:
+        contributor_query += f"INNER JOIN publisher on (book.book_id = publisher.book_id) \
+                             INNER JOIN contributors AS contributors2 ON (publisher.contributor_id = contributors2.contributor_id)"
 
     query_end = f"{filter_by} LIKE'%{query}%'" if filter_by != "book_model.release_date" else f"CAST({filter_by} AS char(10)) LIKE '%{string_to_db_date(query)}%'"
-    book_id_tuple = DATABASE.Query(f"SELECT DISTINCT book.book_id, MIN({sort_by}) FROM book \
-                                        INNER JOIN author on (book.book_id = author.book_id) \
-                                        INNER JOIN publisher ON (book.book_id = publisher.book_id) \
-                                        INNER JOIN contributors ON (author.contributor_id = contributors.contributor_id OR publisher.contributor_id = contributors.contributor_id) \
+    book_id_tuple = DATABASE.Query(f"SELECT DISTINCT book.book_id, MIN({sort_by}), FROM book \
+                                        {contributor_query} \
                                         INNER JOIN book_genres ON (book_genres.book_id = book.book_id) \
                                         INNER JOIN book_model ON (book_model.book_id = book.book_id) \
                                         INNER JOIN genre ON (genre.genre_id = book_genres.genre_id) \
                                         WHERE {query_end} \
                                         GROUP BY book.book_id \
-                                        ORDER BY MIN({sort_by}) {sort_order}")
+                                        ORDER BY MIN({sort_by}), {sort_order}")
     return [get_book(book_id[0]) for book_id in book_id_tuple]
 
 
