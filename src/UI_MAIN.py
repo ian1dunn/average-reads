@@ -5,7 +5,6 @@ import tkinter
 
 import pathlib
 from AverageReadsMain import validate_sign_in, validate_sign_up, sign_up_new_user, sign_in_user, \
-    get_collection_view_data, \
     get_collections, read_book, rate_book, add_to_collection, create_collection, remove_from_collection, \
     book_in_collection, get_rating_on_book, delete_collection, change_collection_name, query_search, try_follow_user, \
     get_following, get_user, unfollow_user, get_book, sign_out_user, get_num_books_and_pages, States, process_finished
@@ -139,10 +138,11 @@ class AverageReadsPygubuApp:
 
     def read_book_pressed(self):
         try:
-            e1, e2 = int(self.start_page_entry.get()), int(self.end_page_entry.get())
-            if 0 <= e1 < e2 <= self.viewing_book[2]:
+            e1, e2 = int(self.start_page_entry.get_text()), int(self.end_page_entry.get_text())
+            if 1 <= e1 < e2 <= self.viewing_book[2]:
                 self.page_number_error.pack_forget()
                 read_book(self.viewing_book_component.id, e1, e2)
+                self.start_page_entry.set_text(""), self.end_page_entry.set_text("")
                 return
         except ValueError:
             pass
@@ -209,7 +209,7 @@ class AverageReadsPygubuApp:
         if self.viewing_collection_component is None:
             self.search_pressed(True)
         else:
-            self.refresh_collections()
+            self.view_collection(self.viewing_collection_component)
 
     def follow_pressed(self):
         follow_text = self.following_friend_entry.get_text()
@@ -428,7 +428,7 @@ class CheckboxComponent:
 class PlaceholderEntry:
     def __init__(self, entry: ttk.Entry, text: str = None):
         self.entry = entry
-        text = text if text else entry.get()
+        self.placeholder_text = text = text if text else entry.get()
         self.placed_holder = False
         self.default_color = entry["foreground"]
 
@@ -453,10 +453,15 @@ class PlaceholderEntry:
         return self.entry.get() if not self.placed_holder else ""
 
     def set_text(self, text):
-        self.placed_holder = False
-        self.entry["foreground"] = self.default_color
         self.entry.delete("0", "end")
-        self.entry.insert(0, text)
+        if len(text) > 0:
+            self.placed_holder = False
+            self.entry["foreground"] = self.default_color
+            self.entry.insert(0, text)
+        else:
+            self.placed_holder = True
+            self.entry.insert(0, self.placeholder_text)
+            self.entry["foreground"] = PLACEHOLDER_COLOR
 
     def bind(self, sequence: str, callback):
         self.entry.bind(sequence, callback)
@@ -533,10 +538,10 @@ def count_total_pages(books):
     return total
 
 
-def db_result_to_str(results: list[tuple]):
+def db_result_to_str(results: list[tuple], weird=False):
     final_str = ""
     for result in results:
-        final_str += (", " if len(final_str) > 0 else "") + str(result[0])
+        final_str += (", " if len(final_str) > 0 else "") + str(result if not weird else result[0])
     return final_str
 
 
@@ -560,6 +565,8 @@ def main(self: AverageReadsPygubuApp):
     self.collection_view_name_entry = PlaceholderEntry(self.builder.get_object("collection_view_name_entry"))
     self.following_friend_entry = PlaceholderEntry(self.builder.get_object("following_friend_entry"))
     self.rating_text_entry = PlaceholderEntry(self.builder.get_object("rating_text_entry"))
+    self.start_page_entry = PlaceholderEntry(self.builder.get_object("start_page_entry"))
+    self.end_page_entry = PlaceholderEntry(self.builder.get_object("end_page_entry"))
 
     self.main_procedural = ProceduralScroller("main_scroller", component_master=self.results_frame.widget,
                                               side=tkinter.LEFT, expand=True, fill=tkinter.BOTH)
@@ -570,8 +577,6 @@ def main(self: AverageReadsPygubuApp):
     self.collection_checks_procedural = ProceduralScroller("save_scroller", expand=tkinter.TRUE, fill=tkinter.BOTH,
                                                            padx=10)
 
-    self.start_page_entry = self.builder.get_object("start_page_entry")
-    self.end_page_entry = self.builder.get_object("end_page_entry")
     self.page_number_error = self.builder.get_object("page_number_error")
     self.rating_error_label = self.builder.get_object("rating_error_label")
 
@@ -594,6 +599,7 @@ def main(self: AverageReadsPygubuApp):
     self.viewing_collection_component = None
     self.previous_query = ""
     self.previous_search_sort = self.search_sort_var.get()
+    self.querying = False
 
     def view_book(component):
         # Set Previous Rating by the user in rating_text_entry spot
@@ -601,9 +607,9 @@ def main(self: AverageReadsPygubuApp):
         book_data, genre_data, rating, author_data, publisher_data, audience_data, release_date = get_book(component.id)
         self.viewing_book = book_data
         self.details_lc.update_cur_texts(
-            [book_data[1], db_result_to_str(genre_data), book_data[2], rating,
-             db_result_to_str(author_data), db_result_to_str(publisher_data),
-             db_result_to_str(audience_data), release_date])
+            [book_data[1], db_result_to_str(genre_data, True), book_data[2], rating,
+             db_result_to_str(author_data, True), db_result_to_str(publisher_data, True),
+             db_result_to_str(audience_data, True), release_date])
         self.removed_from_collection = False
 
         self.rating_text_entry.set_text(get_rating_on_book(component.id))
@@ -620,22 +626,24 @@ def main(self: AverageReadsPygubuApp):
         self.book_view_frame.hide()
         self.close_save_frame()
         self.collection_info_frame.show()
-        collection_name, collection_books = get_collection_view_data(component.id, self.sort_by_var.get(),
-                                                                     self.sort_order_var.get())
+        bid_title_pages_genres, authors_publisher_audience, avg_rate_release_date, cname = query_search("","",
+                                                                                                 self.sort_by_var.get(),
+                                                                                                 self.sort_order_var.get(), collection_id = component.id)
         self.results_text_var.set(COLLECTION_CONTENT_TEXT)
-        self.collection_view_name_entry.set_text(collection_name)
+        self.collection_view_name_entry.set_text(cname)
 
         self.main_procedural.set_components([ListComponent(label_texts=BOOK_COMPONENTS, width=500,
-                                                           selected_method=view_book, identifier=book_data[0],
-                                                           cur_texts=[book_data[1], db_result_to_str(genre_data),
-                                                                      book_data[2], rating,
-                                                                      db_result_to_str(author_data),
-                                                                      db_result_to_str(publisher_data),
-                                                                      db_result_to_str(audience_data), release_date])
+                                                           selected_method=view_book, identifier=bid_title_pages_genres[i][0],
+                                                           cur_texts=[bid_title_pages_genres[i][1], db_result_to_str(bid_title_pages_genres[i][3]),
+                                                                      bid_title_pages_genres[i][2], round(avg_rate_release_date[i][0], 1),
+                                                                      db_result_to_str(authors_publisher_audience[i][0]),
+                                                                      db_result_to_str(authors_publisher_audience[i][1]),
+                                                                      db_result_to_str(authors_publisher_audience[i][2]) if len(authors_publisher_audience[i]) == 3 else "N/A",
+                                                                      avg_rate_release_date[i][1]])
                                              for
-                                             book_data, genre_data, rating, author_data, publisher_data, audience_data, release_date
+                                             i
                                              in
-                                             collection_books])
+                                             range(len(bid_title_pages_genres))])
 
     def toggle_book_in_collection_state(checkbox_component: CheckboxComponent):
         if checkbox_component.is_checked():
@@ -678,41 +686,42 @@ def main(self: AverageReadsPygubuApp):
             self.main_procedural.show()
 
     def search_for_book(search_text, search_sort):
+        self.querying = True
         self.previous_query = search_text
         self.previous_search_sort = search_sort
         self.viewing_book_component = None
         self.viewing_book = None
         self.viewing_collection_component = None
 
-        results = query_search(search_text, search_sort, self.sort_by_var.get(), self.sort_order_var.get())
-        self.results_text_var.set(SEARCH_RESULT_TEXT + str(len(results)))
+        bid_title_pages_genres, authors_publisher_audience, avg_rate_release_date = query_search(search_text, search_sort, self.sort_by_var.get(), self.sort_order_var.get())
+        self.results_text_var.set(SEARCH_RESULT_TEXT + str(len(bid_title_pages_genres)))
 
         self.main_procedural.set_components([ListComponent(label_texts=BOOK_COMPONENTS, width=500,
-                                                           selected_method=view_book, identifier=book_data[0],
-                                                           cur_texts=[book_data[1], db_result_to_str(genre_data),
-                                                                      book_data[2], rating,
-                                                                      db_result_to_str(author_data),
-                                                                      db_result_to_str(publisher_data),
-                                                                      db_result_to_str(audience_data), release_date])
+                                                           selected_method=view_book, identifier=bid_title_pages_genres[i][0],
+                                                           cur_texts=[bid_title_pages_genres[i][1], db_result_to_str(bid_title_pages_genres[i][3]),
+                                                                      bid_title_pages_genres[i][2], round(avg_rate_release_date[i][0], 1),
+                                                                      db_result_to_str(authors_publisher_audience[i][0]),
+                                                                      db_result_to_str(authors_publisher_audience[i][1]),
+                                                                      db_result_to_str(authors_publisher_audience[i][2]) if len(authors_publisher_audience[i]) == 3 else "N/A",
+                                                                      avg_rate_release_date[i][1]])
                                              for
-                                             book_data, genre_data, rating, author_data, publisher_data, audience_data, release_date
-                                             in
-                                             results])
+                                             i in range(len(bid_title_pages_genres))])
 
         self.book_view_frame.hide()
         self.collection_info_frame.hide()
         self.close_save_frame()
         self.main_procedural.show()
+        self.querying = False
 
     def search_pressed(last=False, *args):
-        if last is True:
-            search_text = self.previous_query
-            search_sort = self.previous_search_sort
-        else:
-            search_text = self.book_search_entry.get_text()
-            search_sort = self.search_sort_var.get()
-
-        search_for_book(search_text, search_sort)
+        if not self.querying:
+            if last is True:
+                search_text = self.previous_query
+                search_sort = self.previous_search_sort
+            else:
+                search_text = self.book_search_entry.get_text()
+                search_sort = self.search_sort_var.get()
+            threading.Thread(target=search_for_book, args=(search_text, search_sort)).start()
 
     def sign_in(params):
         if type(params) != str:  # signing up
@@ -828,11 +837,10 @@ def main(self: AverageReadsPygubuApp):
     self.request_sign_in = request_sign_in
     self.request_sign_up = request_sign_up
 
+    self.view_collection = view_collection
+
     self.collection_view_name_entry.bind(RETURN, attempt_collection_name_change)
     self.book_search_entry.bind(RETURN, search_pressed)
-
-    PlaceholderEntry(self.start_page_entry)
-    PlaceholderEntry(self.end_page_entry)
 
     self.collection_name_error_var.set("")
 

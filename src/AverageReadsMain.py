@@ -1,3 +1,4 @@
+import threading
 from enum import Enum
 
 from DBInteraction import Connection
@@ -100,6 +101,8 @@ def string_to_db_date(string):
         return f"{year}"
 
     return f"{year}-{month}-{day}"
+
+
 ################################################### SQL DATA METHODS ###################################################
 # TODO idk exactly what the format of the time should be
 def read_book(book_id, start_page, end_page):
@@ -124,18 +127,19 @@ def add_to_collection(book_id, collection_id):
 
 
 def remove_from_collection(book_id, collection_id):
-    DATABASE.Query(f"DELETE FROM contains WHERE collection_id = {collection_id} AND bid = {book_id}")
+    DATABASE.Query(f"DELETE FROM contains WHERE collection_id = {collection_id} AND book_id = {book_id}")
 
 
 def delete_collection(collection_id):
-    DATABASE.Query(f"DELETE FROM contains WHERE collection_id = {collection_id}") # Delete all books from the collection
-    DATABASE.Query(f"DELETE FROM collection WHERE collection_id = {collection_id}") # Delete the collection
+    DATABASE.Query(
+        f"DELETE FROM contains WHERE collection_id = {collection_id}")  # Delete all books from the collection
+    DATABASE.Query(f"DELETE FROM collection WHERE collection_id = {collection_id}")  # Delete the collection
 
 
 def get_rating_on_book(book_id):
     # Book local rating
     result = DATABASE.Query(f"SELECT rating FROM rating WHERE user_id = {CURRENT_UID} AND book_id = {book_id}",
-                       fetch_all=False)
+                            fetch_all=False)
 
     return round(float(result[0]), 1) if result is not None else ""
 
@@ -152,7 +156,8 @@ def get_book(book_id):
             DATABASE.Query(
                 f"SELECT genre.g_name FROM genre where genre.genre_id IN (SELECT BG.genre_id FROM book AS B INNER JOIN book_genres AS BG ON B.book_id = BG.book_id where B.book_id = {book_id}) ORDER BY genre.g_name"),
             # gets genre names attached to book
-            round(float(rating[0]), 1) if rating is not None and rating[0] is not None else "",  # gets average rating of book
+            round(float(rating[0]), 1) if rating is not None and rating[0] is not None else "",
+            # gets average rating of book
             DATABASE.Query(
                 f"SELECT contributors.c_name FROM contributors where contributors.contributor_id IN (SELECT A.contributor_id from author AS A INNER JOIN book AS B ON B.book_id = A.book_id WHERE B.book_id = {book_id}) ORDER BY contributors.c_name"),
             # gets author names attached to book
@@ -164,30 +169,6 @@ def get_book(book_id):
             # gets audience name attached to book
             DATABASE.Query(f"SELECT MIN(book_model.release_date) FROM book_model WHERE book_model.book_id = {book_id}",
                            fetch_all=False)[0])  # gets min release date of book
-
-
-def get_collection_view_data(collection_id, sort_by, sort_order):
-    # Get data from collection in db and return it
-    sort_order = "ASC" if sort_order == "Ascending" else "DESC"
-    sort_by = "book.title" if sort_by == "Title" else "book_model.release_date" if sort_by == "Release Year" else "genre.g_name" if sort_by == "Genre" else "contributors.c_name" if sort_by == "Author" else "publisher.c_name"
-
-    book_id_tuple = DATABASE.Query(f"SELECT book_info.book_id FROM \
-                                        (SELECT DISTINCT book.book_id, book.title FROM book INNER JOIN author on (book.book_id = author.book_id) \
-                                            INNER JOIN contributors ON (author.contributor_id = contributors.contributor_id) \
-                                            INNER JOIN publisher ON (book.book_id = publisher.book_id) \
-                                            INNER JOIN contributors AS C ON (publisher.contributor_id = C.contributor_id) \
-                                            INNER JOIN book_genres ON (book_genres.book_id = book.book_id) \
-                                            INNER JOIN genre ON (genre.genre_id = book_genres.genre_id) \
-                                            INNER JOIN book_model ON (book_model.book_id = book.book_id) \
-                                            INNER JOIN contains ON (contains.book_id = book.book_id) \
-                                            WHERE contains.collection_id = {collection_id} \
-                                            ORDER BY {sort_by} {sort_order}) \
-                                        AS book_info")
-
-    return (
-        DATABASE.Query(f"SELECT collection_name FROM collection WHERE collection_id = {collection_id}",
-                       fetch_all=False)[0],
-        [get_book(book_id[0]) for book_id in book_id_tuple])
 
 
 def create_collection(collection_name):
@@ -206,23 +187,83 @@ def change_collection_name(collection_id, name):
 # filter_by is what we're filtering by it will be one of these string (Title,Author,Publisher,Genre,Release Year)
 # sort_by is how the items should be sorted it will be one of the strings above
 # sort_order is one of these strings (Ascending,Descending)
-def query_search(query, filter_by, sort_by, sort_order):
+def query_search(query="", filter_by="", sort_by="", sort_order="", collection_id=None):
     sort_order = "ASC" if sort_order == "Ascending" else "DESC"
-    sort_by = "book.title" if sort_by == "Title" else "book_model.release_date" if sort_by == "Release Year" else "genre.g_name" if sort_by == "Genre" else "contributors.c_name" if sort_by == "Author" else "publisher.c_name"
-    filter_by = "book.title" if filter_by == "Title" else "book_model.release_date" if filter_by == "Release Year" else "genre.g_name" if filter_by == "Genre" else "contributors.c_name" if filter_by == "Author" else "publisher.c_name"
 
-    query_end = f"{filter_by} LIKE'%{query}%'" if filter_by != "book_model.release_date" else f"CAST({filter_by} AS char(10)) LIKE '%{string_to_db_date(query)}%'"
-    book_id_tuple = DATABASE.Query(f"SELECT DISTINCT book.book_id, MIN({sort_by}) FROM book \
-                                        INNER JOIN author on (book.book_id = author.book_id) \
-                                        INNER JOIN publisher ON (book.book_id = publisher.book_id) \
-                                        INNER JOIN contributors ON (author.contributor_id = contributors.contributor_id OR publisher.contributor_id = contributors.contributor_id) \
-                                        INNER JOIN book_genres ON (book_genres.book_id = book.book_id) \
-                                        INNER JOIN book_model ON (book_model.book_id = book.book_id) \
-                                        INNER JOIN genre ON (genre.genre_id = book_genres.genre_id) \
-                                        WHERE {query_end} \
-                                        GROUP BY book.book_id \
-                                        ORDER BY MIN({sort_by}) {sort_order}")
-    return [get_book(book_id[0]) for book_id in book_id_tuple]
+    query_extras = ["", "", ""]
+
+    sort_by = "book.title" if sort_by == "Title" else "book_model.release_date" if sort_by == "Release Year" else "genre.g_name" if sort_by == "Genre" else "ca.c_name" if sort_by == "Author" else "cp.c_name"
+    filter_by = "book.title" if filter_by == "Title" else "book_model.release_date" if filter_by == "Release Year" else "genre.g_name" if filter_by == "Genre" else "ca.c_name" if filter_by == "Author" else "cp.c_name"
+
+    query = query.lower()
+
+    query_end = f"lower({filter_by}) LIKE'%{query}%'" if filter_by != "book_model.release_date" else f"CAST({filter_by} AS char(10)) LIKE '%{string_to_db_date(query)}%'"
+
+    if filter_by == "book_model.release_date" or sort_by == "book_model.release_date":
+        query_extras[0] = "INNER JOIN book_model ON (book_model.book_id = book.book_id)"
+        query_extras[1] = "INNER JOIN book_model ON (book_model.book_id = book.book_id)"
+
+    if filter_by == "genre.g_name" or sort_by == "genre.g_name":
+        query_extras[
+            1] += "INNER JOIN book_genres ON (book_genres.book_id = book.book_id) INNER JOIN genre ON (genre.genre_id = book_genres.genre_id)"
+        query_extras[
+            2] += "INNER JOIN book_genres ON (book_genres.book_id = book.book_id) INNER JOIN genre ON (genre.genre_id = book_genres.genre_id)"
+        if filter_by == "genre.g_name":
+            query_end = f"EXISTS(SELECT 1 FROM book_genres AS bg INNER JOIN genre AS gr ON (bg.genre_id = gr.genre_id) WHERE lower(gr.g_name) LIKE '%{query}%' AND bg.book_id = book.book_id)"
+
+    if filter_by == "ca.c_name" or sort_by == "ca.c_name":
+        query_extras[
+            0] += "INNER JOIN author on (book.book_id = author.book_id) INNER JOIN contributors AS ca ON (author.contributor_id = ca.contributor_id)"
+        query_extras[
+            2] += "INNER JOIN author on (book.book_id = author.book_id) INNER JOIN contributors AS ca ON (author.contributor_id = ca.contributor_id)"
+        if filter_by == "ca.c_name":
+            query_end = f"EXISTS(SELECT 1 FROM contributors AS zca INNER JOIN author AS zsee ON (zca.contributor_id = zsee.contributor_id) WHERE lower(zca.c_name) LIKE '%{query}%' AND zsee.book_id = book.book_id)"
+
+    if filter_by == "cp.c_name" or sort_by == "cp.c_name":
+        query_extras[
+            0] += "INNER JOIN publisher on (book.book_id = publisher.book_id) INNER JOIN contributors AS cp ON (publisher.contributor_id = cp.contributor_id)"
+        query_extras[
+            2] += "INNER JOIN publisher on (book.book_id = publisher.book_id) INNER JOIN contributors AS cp ON (publisher.contributor_id = cp.contributor_id)"
+        if filter_by == "cp.c_name":
+            query_end = f"EXISTS(SELECT 1 FROM contributors AS zca INNER JOIN publisher AS zsee ON (zca.contributor_id = zsee.contributor_id) WHERE lower(zca.c_name) LIKE '%{query}%' AND zsee.book_id = book.book_id)"
+
+    if collection_id is not None:
+        query_extras[0] += "INNER JOIN contains ON (contains.book_id = book.book_id) INNER JOIN collection ON (collection.collection_id = contains.collection_id)"
+        query_extras[1] += "INNER JOIN contains ON (contains.book_id = book.book_id) INNER JOIN collection ON (collection.collection_id = contains.collection_id)"
+        query_extras[2] += "INNER JOIN contains ON (contains.book_id = book.book_id) INNER JOIN collection ON (collection.collection_id = contains.collection_id)"
+        query_end = f"contains.collection_id = {collection_id} "
+
+    query_end += f" GROUP BY book.book_id ORDER BY MIN({sort_by}) {sort_order}"
+
+    bid_title_pages_genres = DATABASE.Query(f"SELECT book.book_id, book.title, book.pages, array_agg(DISTINCT genre.g_name) FROM book \
+                    INNER JOIN book_genres ON (book_genres.book_id = book.book_id) \
+                    INNER JOIN genre ON (genre.genre_id = book_genres.genre_id) \
+                    {query_extras[0]} WHERE {query_end}")
+
+    authors_publisher_audience = DATABASE.Query(
+        f"SELECT array_agg(DISTINCT ca.c_name), array_agg(DISTINCT cp.c_name), array_agg(DISTINCT audience.a_name) FROM book \
+                    INNER JOIN author on (book.book_id = author.book_id) \
+                    INNER JOIN contributors AS ca ON (author.contributor_id = ca.contributor_id) \
+                    INNER JOIN publisher ON (book.book_id = publisher.book_id) \
+                    INNER JOIN contributors AS cp ON (publisher.contributor_id = cp.contributor_id) \
+                    LEFT OUTER JOIN appeal_to_book AS atb ON (book.book_id = atb.book_id) \
+                    LEFT OUTER JOIN audience ON (audience.audience_id = atb.audience_id)\
+                    {query_extras[1]} WHERE {query_end}")
+
+    avg_rate_release_date = DATABASE.Query(
+        f"SELECT AVG(rating), MIN(book_model.release_date) FROM book \
+                    INNER JOIN book_model ON (book_model.book_id = book.book_id) \
+                    INNER JOIN rating ON (rating.book_id = book.book_id) \
+                    INNER JOIN appeal_to_book AS atb ON (book.book_id = atb.book_id)\
+                    {query_extras[2]} WHERE {query_end}")
+
+    if collection_id is None:
+        return bid_title_pages_genres, authors_publisher_audience, avg_rate_release_date
+    else:
+        return bid_title_pages_genres, authors_publisher_audience, avg_rate_release_date, DATABASE.Query(f"SELECT collection_name FROM collection WHERE collection_id = {collection_id}", fetch_all=False)[0]
+
+
+# Truly a gamer moment right here
 
 
 def get_following():
@@ -275,4 +316,10 @@ def process_finished():
 
 # Test here.
 if __name__ == '__main__':
-    DATABASE.ConnectionClose()
+    try:
+        start = datetime.datetime.now()
+        print("Began")
+        print(query_search(book_id=1))
+        print("Elapsed:", datetime.datetime.now() - start)
+    finally:
+        DATABASE.ConnectionClose()
