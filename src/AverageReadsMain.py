@@ -104,7 +104,6 @@ def string_to_db_date(string):
 
 
 ################################################### SQL DATA METHODS ###################################################
-# TODO idk exactly what the format of the time should be
 def read_book(book_id, start_page, end_page):
     end_time = datetime.datetime.now()
     start_time = end_time - datetime.timedelta(seconds=(end_page - start_page) * random.randint(30, 60))
@@ -112,7 +111,6 @@ def read_book(book_id, start_page, end_page):
         f"INSERT INTO reading_session (user_id,book_id,session_start,session_end,start_page,end_page) VALUES ({CURRENT_UID},{book_id},'{start_time}','{end_time}', {start_page}, {end_page})")
 
 
-# TODO either update or insert a new rating for the user on the book
 def rate_book(book_id, rating):
     result = DATABASE.Query(f"SELECT rating FROM rating WHERE user_id = {CURRENT_UID} AND book_id = {book_id}",
                             fetch_all=False)
@@ -183,7 +181,6 @@ def change_collection_name(collection_id, name):
 
 
 # Create a joint table
-# TODO We need book.book_id, book.title, book.pages, genres, book global rating, book authors, book publishers, book audience, book released date
 # filter_by is what we're filtering by it will be one of these string (Title,Author,Publisher,Genre,Release Year)
 # sort_by is how the items should be sorted it will be one of the strings above
 # sort_order is one of these strings (Ascending,Descending)
@@ -261,8 +258,6 @@ def query_search(query="", filter_by="", sort_by="", sort_order="", collection_i
         return bid_title_pages_genres, authors_publisher_audience, avg_rate_release_date
     else:
         return bid_title_pages_genres, authors_publisher_audience, avg_rate_release_date, DATABASE.Query(f"SELECT collection_name FROM collection WHERE collection_id = {collection_id}", fetch_all=False)[0]
-
-
 # Truly a gamer moment right here
 
 
@@ -299,10 +294,9 @@ def try_follow_user(other_email):
 
 
 def get_collections():
-    return DATABASE.Query(f"SELECT collection_name, collection_id FROM collection WHERE user_id = {CURRENT_UID}")
+    return DATABASE.Query(f"SELECT collection_name, collection_id FROM collection WHERE user_id = {CURRENT_UID} ORDER BY collection_name")
 
 
-# TODO I think this will work...
 def get_num_books_and_pages(collection_id):
     results = DATABASE.Query(
         f"SELECT COUNT(b.book_id), SUM(b.pages) FROM book AS b INNER JOIN collection c2 on c2.collection_id = {collection_id} INNER JOIN contains c on (b.book_id = c.book_id AND c.collection_id = c2.collection_id)",
@@ -319,7 +313,6 @@ if __name__ == '__main__':
     try:
         start = datetime.datetime.now()
         print("Began")
-        print(query_search(book_id=1))
         print("Elapsed:", datetime.datetime.now() - start)
     finally:
         DATABASE.ConnectionClose()
