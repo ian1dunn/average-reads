@@ -237,14 +237,14 @@ def query_search(query, filter_by, sort_by, sort_order):
                              INNER JOIN contributors AS contributors2 ON (publisher.contributor_id = contributors2.contributor_id)"
 
     query_end = f"{filter_by} LIKE'%{query}%'" if filter_by != "book_model.release_date" else f"CAST({filter_by} AS char(10)) LIKE '%{string_to_db_date(query)}%'"
-    book_id_tuple = DATABASE.Query(f"SELECT DISTINCT book.book_id, MIN({sort_by}), FROM book \
+    book_id_tuple = DATABASE.Query(f"SELECT DISTINCT book.book_id, MIN({sort_by}) FROM book \
                                         {contributor_query} \
                                         INNER JOIN book_genres ON (book_genres.book_id = book.book_id) \
                                         INNER JOIN book_model ON (book_model.book_id = book.book_id) \
                                         INNER JOIN genre ON (genre.genre_id = book_genres.genre_id) \
                                         WHERE {query_end} \
                                         GROUP BY book.book_id \
-                                        ORDER BY MIN({sort_by}), {sort_order}")
+                                        ORDER BY MIN({sort_by}) {sort_order}")
     return [get_book(book_id[0]) for book_id in book_id_tuple]
 
 
@@ -281,7 +281,7 @@ def try_follow_user(other_email):
 
 
 def get_collections():
-    return DATABASE.Query(f"SELECT collection_name, collection_id FROM collection WHERE user_id = {CURRENT_UID}")
+    return DATABASE.Query(f"SELECT collection_name, collection_id FROM collection WHERE user_id = {CURRENT_UID} ORDER BY collection_name")
 
 
 # TODO I think this will work...
