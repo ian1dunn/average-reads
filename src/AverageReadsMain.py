@@ -250,7 +250,7 @@ def query_search(query="", filter_by="", sort_by="", sort_order="", collection_i
     avg_rate_release_date = DATABASE.Query(
         f"SELECT AVG(rating), MIN(book_model.release_date) FROM book \
                     INNER JOIN book_model ON (book_model.book_id = book.book_id) \
-                    INNER JOIN rating ON (rating.book_id = book.book_id) \
+                    LEFT OUTER JOIN rating ON (rating.book_id = book.book_id) \
                     INNER JOIN appeal_to_book AS atb ON (book.book_id = atb.book_id)\
                     {query_extras[2]} WHERE {query_end}")
 
