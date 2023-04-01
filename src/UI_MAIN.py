@@ -454,7 +454,7 @@ class PlaceholderEntry:
 
     def set_text(self, text):
         self.entry.delete("0", "end")
-        if len(text) > 0:
+        if len(str(text)) > 0:
             self.placed_holder = False
             self.entry["foreground"] = self.default_color
             self.entry.insert(0, text)

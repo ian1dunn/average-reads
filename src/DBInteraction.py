@@ -29,9 +29,9 @@ class Connection:
         except:
             print("Connection failed")
 
-    def Query(self, query: str, fetch_all=True) -> list[tuple] | None:
+    def Query(self, query: str, fetch_all=True, data=None) -> list[tuple] | None:
         cur = self.connection.cursor()
-        cur.execute(query)
+        cur.execute(query, data)
         results = None
         if query.startswith("SELECT") or "RETURNING" in query:
             # Select is the only query which returns data (I think)
@@ -53,5 +53,17 @@ class Connection:
         self.server.close()
         self.connection.close()
         print("Closed")
+
+
+def test():
+    return [(("a",), ("b",)), (("c",), ("d",))]
+
+
+if __name__ == '__main__':
+    DATABASE = Connection()
+    cursor = DATABASE.connection.cursor()
+    for i in range(10):
+        cursor.execute("SELECT * FROM users")
+    DATABASE.ConnectionClose()
 
 
