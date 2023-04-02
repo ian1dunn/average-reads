@@ -308,16 +308,31 @@ def query_search(query="", filter_by="", sort_by="", sort_order="", collection_i
 def get_following():
     # Get a list of the users, this person is following
     return DATABASE.Query(
-        f"SELECT followee_uid, u.username FROM friend INNER join users u on friend.followee_uid = u.user_id where follower_uid = {CURRENT_UID}")
+        "SELECT followee_uid, u.username FROM friend INNER join users u on friend.followee_uid = u.user_id where "
+        f"follower_uid = {CURRENT_UID}")
 
 
 def get_user(uid):
     # Get user information based on their uid
-    return DATABASE.Query(f"SELECT * from users WHERE user_id = {uid}", fetch_all=False)
+    return DATABASE.Query("SELECT users.user_id, users.username, users.f_name, users.l_name, users.email, "
+                          "users.creation_date, (SELECT COUNT(collection_id) FROM collection WHERE "
+                          "collection.user_id = users.user_id), (SELECT COUNT(friend.followee_uid) FROM friend WHERE "
+                          "friend.followee_uid = users.user_id), (SELECT COUNT(friend.follower_uid) FROM friend "
+                          f"WHERE friend.follower_uid = users.user_id) from users WHERE users.user_id = {uid};",
+                          fetch_all=False), get_user_top_books(uid)
+
+
+def get_user_top_books(user_id):
+    results = DATABASE.Query(f"SELECT book.title, COALESCE((SELECT r.rating FROM rating AS r WHERE (r.book_id = book.book_id AND user_id = {user_id})), 0), (SELECT COUNT(rss.user_id) FROM reading_session AS rss WHERE (rss.book_id = book.book_id AND user_id = {user_id})) FROM book LEFT OUTER JOIN rating r on (book.book_id = r.book_id) LEFT OUTER JOIN reading_session on (book.book_id = reading_session.book_id) WHERE (reading_session.user_id = {user_id} OR r.user_id = {user_id}) GROUP BY book.book_id ORDER BY COALESCE((SELECT r.rating FROM rating AS r WHERE (r.book_id = book.book_id AND user_id = {user_id})), 0) DESC, COUNT(book.book_id) DESC LIMIT 10;")
+    return results
 
 
 def unfollow_user(uid):
     DATABASE.Query(f"DELETE FROM friend WHERE follower_uid = {CURRENT_UID} AND followee_uid = {uid}")
+
+
+def get_cur_user_id():
+    return CURRENT_UID
 
 
 def try_follow_user(other_email):
@@ -369,6 +384,6 @@ def process_finished():
 # Test here.
 if __name__ == '__main__':
     try:
-        pass
+        print(get_user_top_books(204))
     finally:
         DATABASE.ConnectionClose()

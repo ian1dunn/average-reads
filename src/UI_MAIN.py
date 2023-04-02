@@ -7,7 +7,8 @@ import pathlib
 from AverageReadsMain import validate_sign_in, validate_sign_up, sign_up_new_user, sign_in_user, \
     get_collections, read_book, rate_book, add_to_collection, create_collection, remove_from_collection, \
     book_in_collection, get_rating_on_book, delete_collection, change_collection_name, query_search, try_follow_user, \
-    get_following, get_user, unfollow_user, get_book, sign_out_user, get_num_books_and_pages, States, process_finished
+    get_following, get_user, unfollow_user, get_book, sign_out_user, get_num_books_and_pages, States, process_finished, \
+    get_cur_user_id
 
 import tkinter.ttk as ttk
 import pygubu
@@ -235,7 +236,7 @@ RETURN = "<Return>"
 COLLECTION_COMPONENTS = ("Name: ", "Total Books: ", "Total Pages: ")
 BOOK_COMPONENTS = (
     "Title: ", "Genre: ", "Pages: ", "Rating: ", "Author: ", "Publisher: ", "Audience: ", "Released Date: ")
-USER_COMPONENTS = ("Username: ", "UID: ", "First Name: ", "Last Name: ", "Email: ", "Creation Date: ")
+USER_COMPONENTS = ("Username: ", "UID: ", "First Name: ", "Last Name: ", "Email: ", "Creation Date: ", "Collections: ", "Followers: ", "Following: ", "Top Books: ")
 
 SEARCH_RESULT_TEXT = "Results: "
 COLLECTION_CONTENT_TEXT = "Viewing Collection"
@@ -545,6 +546,21 @@ def db_result_to_str(results: list[tuple], weird=False):
     return final_str
 
 
+def top_books_to_str(books_data):
+    result = ""
+    i = 0
+    for book_data in books_data:
+        i += 1
+        result += f"\n{i}.{'  ' if i < 10 else ' '}{book_data[0]}"
+        # if book_data[1] > 0 and book_data[2] > 0:
+        #     result += f"Rated: {book_data[1]}, Read: {book_data[2]} times"
+        # elif book_data[1] > 0:
+        #     result += f"Rated: {book_data[1]}"
+        # elif book_data[2] > 0:
+        #     result += f"Read: {book_data[2]} times"
+    return result
+
+
 def main(self: AverageReadsPygubuApp):
     CWidget.set_builder(self.builder)
     self.sign_in_frame = CWidget("sign_in_frame", expand=True)
@@ -559,6 +575,7 @@ def main(self: AverageReadsPygubuApp):
     self.prompt_frame = CWidget("prompt_frame", layout_method=tkinter.Place, relwidth=1, relheight=1)
     self.save_collection_frame = CWidget("save_collection_frame", expand=tkinter.TRUE, fill=tkinter.BOTH)
     self.view_user_frame = CWidget("view_user_frame", expand=tkinter.TRUE, fill=tkinter.BOTH)
+    self.unfollow_btn = CWidget("unfollow_btn", side=tkinter.BOTTOM, pady=10)
 
     self.book_search_entry = PlaceholderEntry(self.builder.get_object("book_search_entry"))
     self.collection_name_entry = PlaceholderEntry(self.builder.get_object("collection_name_entry"))
@@ -590,7 +607,7 @@ def main(self: AverageReadsPygubuApp):
 
     self.details_lc = ListComponent(self.builder.get_object("details_frame"), BOOK_COMPONENTS, width=500, cursor="")
     self.user_details_lc = ListComponent(self.builder.get_object("user_contents_scrolled").innerframe, USER_COMPONENTS,
-                                         width=200, cursor="")
+                                         width=300, cursor="")
 
     self.viewing_book_component = None
     self.viewing_book = None
@@ -750,15 +767,26 @@ def main(self: AverageReadsPygubuApp):
         self.main_frame.hide()
         self.save_frame.hide()
 
-    def display_user(component: ListComponent):
+    def view_user(component: ListComponent = None, uid=None):
         self.close_save_frame()
         self.viewing_user_component = component
-        user_id, username, _, f_name, l_name, email, creation_date, _ = get_user(self.viewing_user_component.id)
+        user_stuff, books = get_user(self.viewing_user_component.id if component else uid)
+        user_id, username, f_name, l_name, email, creation_date, num_collections, num_followers, num_following = user_stuff
+
+        if uid is not None:
+            self.unfollow_btn.hide()
+            self.save_frame_var.set("Viewing Profile...")
+        else:
+            self.unfollow_btn.show()
+            self.save_frame_var.set("Viewing User...")
 
         self.user_details_lc.update_cur_texts(
-            [username, user_id, f_name, l_name, email, creation_date])
+            [username, user_id, f_name, l_name, email, creation_date, num_collections, num_followers, num_following, top_books_to_str(books)])
         self.view_user_frame.show()
-        self.save_frame.show(anchor=tkinter.NW, relx=.5, rely=.5, x=-120, y=-300, width=280, height=250)
+        self.save_frame.show(anchor=tkinter.NW, relx=.5, rely=.5, x=-175, y=-350, width=350, height=450)
+
+    def profile_pressed():
+        view_user(uid=get_cur_user_id())
 
     def unfollow_pressed():
         unfollow_user(self.viewing_user_component.id)
@@ -769,7 +797,7 @@ def main(self: AverageReadsPygubuApp):
     def refresh_following():
         # Note, usernames don't automatically refresh
         self.following_procedural.set_components([ListComponent(label_texts=[""], cur_texts=[username],
-                                                                identifier=user_id, selected_method=display_user)
+                                                                identifier=user_id, selected_method=view_user)
                                                   for user_id, username in get_following()])
 
     def request_sign_in():
@@ -833,6 +861,7 @@ def main(self: AverageReadsPygubuApp):
     self.refresh_following = refresh_following
     self.unfollow_pressed = unfollow_pressed
     self.sign_out_pressed = sign_out_pressed
+    self.profile_pressed = profile_pressed
 
     self.request_sign_in = request_sign_in
     self.request_sign_up = request_sign_up
