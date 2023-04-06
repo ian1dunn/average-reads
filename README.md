@@ -14,11 +14,15 @@ Average of all ratings compared with average of user ratings?
   - `SELECT ...`
 - All ratings of all users
   - `SELECT ...`
+- Query all data from server and store in a file
+  - Only needs to be processed once
 
 ### Processing Data
 - Average rating of a book by all users
 - Average of each user’s ratings
+- Stores in program every time it's ran
 
 ### Displaying Data
 - Using Python to create interpolated graphs?
   - `scipy`, `matplotlib`
+- Outputs to PNGs to put on poster
