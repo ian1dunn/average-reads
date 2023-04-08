@@ -6,221 +6,17 @@ import tkinter
 import pathlib
 from AverageReadsMain import validate_sign_in, validate_sign_up, sign_up_new_user, sign_in_user, \
     get_collections, read_book, rate_book, add_to_collection, create_collection, remove_from_collection, \
-    book_in_collection, get_rating_on_book, delete_collection, change_collection_name, query_search, try_follow_user, \
-    get_following, get_user, unfollow_user, get_book, sign_out_user, get_num_books_and_pages, States, process_finished, \
+    book_in_collection, get_rating_on_book, delete_collection, change_collection_name, try_follow_user, \
+    get_following, get_user, unfollow_user, sign_out_user, get_num_books_and_pages, States, process_finished, \
     get_cur_user_id
+
+from Modules.BookResults import BookResults
 
 import tkinter.ttk as ttk
 import pygubu
 
 PROJECT_PATH = pathlib.Path(__file__).parent
 PROJECT_UI = PROJECT_PATH / "UI\\average_reads_pygubu.ui"
-
-
-class AverageReadsPygubuApp:
-    def __init__(self, master=None):
-        self.builder = builder = pygubu.Builder()
-        builder.add_resource_path(PROJECT_PATH)
-        builder.add_from_file(PROJECT_UI)
-        # Main widget
-        self.mainwindow = builder.get_object("toplevel1", master)
-
-        self.email_var = None
-        self.password_var = None
-        self.first_name_var = None
-        self.last_name_var = None
-        self.username_var = None
-        self.search_sort_var = None
-        self.search_text_var = None
-        self.collection_filter_text_var = None
-        self.sort_by_var = None
-        self.sort_order_var = None
-        self.results_text_var = None
-        self.collection_name_error_var = None
-        self.following_error_var = None
-        self.save_frame_var = None
-        builder.import_variables(self,
-                                 ['email_var',
-                                  'password_var',
-                                  'first_name_var',
-                                  'last_name_var',
-                                  'username_var',
-                                  'search_sort_var',
-                                  'search_text_var',
-                                  'collection_filter_text_var',
-                                  'sort_by_var',
-                                  'sort_order_var',
-                                  'results_text_var',
-                                  'collection_name_error_var',
-                                  'following_error_var',
-                                  'save_frame_var'])
-
-        self.setup_ttk_styles()
-
-        main(self)
-
-        builder.connect_callbacks(self)
-
-    def run(self):
-        self.mainwindow.mainloop()
-
-    def setup_ttk_styles(self):
-        # ttk styles configuration
-        self.style = style = ttk.Style()
-        optiondb = style.master
-        PRIMARY_COLOR = [
-            "#0d0f14",
-            "#212733",
-            "#323a4d",
-            "#424d66",
-            "#536180"
-        ]
-
-        HEADER = {
-            "Font": [
-                ("Cascadia Code", 14),
-                ("Cascadia Code SemiBold", 10),
-                ("Cascadia Code SemiBold", 8)
-            ],
-            "Color": [
-                "white",
-                "#e6e6e6",
-                "#cccccc"
-            ]
-        }
-
-        ENTRY_TEXT_COLOR = "white"
-
-        MAIN_BTN_COLOR = "#f72d2d"
-        SECONDARY_BTN_COLOR = "#f79f2d"
-        style.theme_use("alt")
-
-        style.configure("Header.TLabel", font=HEADER["Font"][0], background=PRIMARY_COLOR[1],
-                        foreground=HEADER["Color"][0])
-        style.configure("Header1.TLabel", font=HEADER["Font"][1], background=PRIMARY_COLOR[1],
-                        foreground=HEADER["Color"][0])
-        style.configure("Header1Bk2.TLabel", font=HEADER["Font"][1], background=PRIMARY_COLOR[2],
-                        foreground=HEADER["Color"][0])
-        style.configure("Header2Bk3.TLabel", font=HEADER["Font"][2], background=PRIMARY_COLOR[2],
-                        foreground=HEADER["Color"][1])
-        style.configure("Custom_Header.TLabel", font=HEADER["Font"][2], background=PRIMARY_COLOR[1])
-        style.configure("Default_Background.TFrame", background=PRIMARY_COLOR[0])
-        style.configure("Default_Background.TNotebook", background=PRIMARY_COLOR[0])
-        style.configure("Inner_1.TFrame", background=PRIMARY_COLOR[1])
-        style.configure("Inner_2.TFrame", background=PRIMARY_COLOR[2])
-        style.configure("Inner_3.TFrame", background=PRIMARY_COLOR[3])
-        style.configure("Innter_2List.TFrame", background=PRIMARY_COLOR[2], relief="ridge")
-        style.configure("Normal_Entry.TEntry", fieldbackground=PRIMARY_COLOR[4], foreground=ENTRY_TEXT_COLOR,
-                        selectbackground=SECONDARY_BTN_COLOR)
-
-        style.configure("Main_Btn.TButton", font=HEADER["Font"][1], background=MAIN_BTN_COLOR)
-        style.configure("Secondary_Btn.TButton", background=SECONDARY_BTN_COLOR, font=HEADER["Font"][2])
-        style.configure("Secondary_Btn_MainColor.TButton", background=MAIN_BTN_COLOR, font=HEADER["Font"][2])
-
-        style.configure("TCheckbutton", background=PRIMARY_COLOR[1], font=HEADER["Font"][2],
-                        foreground=HEADER["Color"][0], indicatorcolor="black")
-        style.configure("TMenubutton", background=PRIMARY_COLOR[3], font=HEADER["Font"][2], foreground=ENTRY_TEXT_COLOR)
-        style.map("TMenubutton", background=[("active", PRIMARY_COLOR[4])])
-
-# -------------------------------------------------- EXTERNAL SETUP -------------------------------------------------- #
-    def show_something_else(self, widget_id):
-        if widget_id == "show_sign_in":
-            self.sign_in_frame.show(False)
-        elif widget_id == "show_sign_up":
-            self.sign_up_frame.show(False)
-
-        self.si_email_cw.hide_error()
-        self.si_password_cw.hide_error()
-        self.su_email_cw.hide_error()
-        self.su_password_cw.hide_error()
-        self.first_name_cw.hide_error()
-        self.last_name_cw.hide_error()
-        self.username_cw.hide_error()
-
-    def read_book_pressed(self):
-        try:
-            e1, e2 = int(self.start_page_entry.get_text()), int(self.end_page_entry.get_text())
-            if 1 <= e1 < e2 <= self.viewing_book[2]:
-                self.page_number_error.pack_forget()
-                read_book(self.viewing_book_component.id, e1, e2)
-                self.start_page_entry.set_text(""), self.end_page_entry.set_text("")
-                return
-        except ValueError:
-            pass
-        self.page_number_error.pack(side=tkinter.LEFT)
-
-    def rate_book_pressed(self):
-        try:
-            rating = float(self.rating_text_entry.get_text())
-            if 1 <= rating <= 5:
-                self.rating_error_label.pack_forget()
-                rate_book(self.viewing_book_component.id, rating)
-                return
-        except ValueError:
-            pass
-        self.rating_error_label.pack(side=tkinter.LEFT)
-
-    def close_save_frame(self):
-        self.new_collection_lower_frame.hide()
-        self.save_collection_frame.hide()
-        self.view_user_frame.hide()
-        self.save_frame.hide()
-
-    def save_book_pressed(self):
-        self.close_save_frame()
-        self.save_frame_var.set("Save To...")
-        self.save_collection_frame.show()
-        self.new_collection_btn.show()
-        self.save_frame.show(anchor=tkinter.NW, relx=.5, rely=.5, x=-120, y=-300, width=280, height=420)
-
-    def create_new_collection_pressed(self):
-        self.new_collection_btn.hide()
-        self.new_collection_lower_frame.show()
-
-    def create_collection_pressed(self):
-        collection_name = self.collection_name_entry.get_text()
-        if len(collection_name) > 0 and collection_name != "Enter Collection name...":  # Nice
-            self.close_save_frame()
-            add_to_collection(self.viewing_book_component.id, create_collection(collection_name))
-            self.refresh_collections()
-        else:
-            self.collection_name_error_var.set(COLLECTION_ERROR_TEXT)
-
-    def back_pressed(self):
-        self.close_save_frame()
-        if self.removed_from_collection and self.viewing_collection_component is not None:
-            self.main_procedural.delete_component(self.viewing_book_component)
-            self.removed_from_collection = False
-        self.book_view_frame.hide()
-        self.main_procedural.show()
-
-    def delete_collection_pressed(self):
-        delete_collection(self.viewing_collection_component.id)
-        self.collection_checks_procedural.delete_component(
-            self.collection_checks_procedural.get_by_id(self.viewing_collection_component.id))
-        self.collection_procedural.delete_component(self.viewing_collection_component)
-        self.viewing_collection_component = None
-        self.main_procedural.hide()
-
-    def view_random_pressed(self):
-        if len(self.main_procedural.components) > 0:
-            self.view_book(random.choice(self.main_procedural.components))
-
-    def sort_books(self, _):
-        if self.viewing_collection_component is None:
-            self.search_pressed(True)
-        else:
-            self.view_collection(self.viewing_collection_component)
-
-    def follow_pressed(self):
-        follow_text = self.following_friend_entry.get_text()
-        if len(follow_text) > 0:
-            result = try_follow_user(follow_text)
-            self.following_error_var.set(FOLLOWING_ERROR_TEXTS[result])
-            if result == 0:
-                self.following_friend_entry.set_text("")
-                self.refresh_following()
-
 
 ERROR_LABEL_CLASS = "errorlabel"
 GRID_INFO_MANAGER = "grid"
@@ -236,7 +32,9 @@ RETURN = "<Return>"
 COLLECTION_COMPONENTS = ("Name: ", "Total Books: ", "Total Pages: ")
 BOOK_COMPONENTS = (
     "Title: ", "Genre: ", "Pages: ", "Rating: ", "Author: ", "Publisher: ", "Audience: ", "Released Date: ")
-USER_COMPONENTS = ("Username: ", "UID: ", "First Name: ", "Last Name: ", "Email: ", "Creation Date: ", "Collections: ", "Followers: ", "Following: ", "Top Books: ")
+USER_COMPONENTS = (
+"Username: ", "UID: ", "First Name: ", "Last Name: ", "Email: ", "Creation Date: ", "Collections: ", "Followers: ",
+"Following: ", "Top Books: ")
 
 SEARCH_RESULT_TEXT = "Results: "
 COLLECTION_CONTENT_TEXT = "Viewing Collection"
@@ -268,6 +66,11 @@ HEADER = {
         "#cccccc"
     ]
 }
+
+ENTRY_TEXT_COLOR = "white"
+
+MAIN_BTN_COLOR = "#f72d2d"
+SECONDARY_BTN_COLOR = "#f79f2d"
 
 
 class CWidget:
@@ -361,7 +164,8 @@ class ListComponent:
 
         idx = 0
         for txt in self.texts:
-            self.labels.append(ttk.Label(frame, text=txt + str(self.cur_texts[idx]), style="Header2Bk3.TLabel", wraplength=self.width*2))
+            self.labels.append(ttk.Label(frame, text=txt + str(self.cur_texts[idx]), style="Header2Bk3.TLabel",
+                                         wraplength=self.width * 2))
             if self.selected_method:
                 self.labels[-1].bind(MOUSE_1, self._selected)
             self.labels[-1].pack(anchor=tkinter.NW, fill=tkinter.X)
@@ -473,7 +277,7 @@ class ProceduralScroller(CWidget):
     Tkinter sucks and will die if we pack too many widgets at a time. Nice. This was cool to make at least.
     Turns pygubu ScrolledFrame into procedural scroll frames so they'll render as the user scrolls to a certain point.
     """
-    RENDER_AMOUNT = 25  # How many books to render at a time
+    RENDER_AMOUNT = 10  # How many books to render at a time
     INITIAL_RENDER = RENDER_AMOUNT * 2  # The starting render amount (bigger than render amount)
 
     def __init__(self, widget_name, component_master=None, variable=None, layout_method=tkinter.Pack, **kw):
@@ -509,6 +313,13 @@ class ProceduralScroller(CWidget):
             self.components) else 10  # Never will reach 10
         self._rendering = False
 
+    def clear_components(self):
+        self._next_render_threshold = 0
+        self._last_idx = 0
+        self._rendering = False
+        self.components = []
+        self._component_frame.pack_forget()
+
     def set_components(self, components):
         self._next_render_threshold = 0
         self._last_idx = 0
@@ -530,6 +341,191 @@ class ProceduralScroller(CWidget):
             self._last_idx -= 1
         self.components.pop(location)
         component.hide()
+
+
+class AverageReadsPygubuApp:
+    def __init__(self, master=None):
+        self.builder = builder = pygubu.Builder()
+        builder.add_resource_path(PROJECT_PATH)
+        builder.add_from_file(PROJECT_UI)
+        # Main widget
+        self.mainwindow = builder.get_object("toplevel1", master)
+
+        self.email_var = None
+        self.password_var = None
+        self.first_name_var = None
+        self.last_name_var = None
+        self.username_var = None
+        self.search_sort_var = None
+        self.search_text_var = None
+        self.collection_filter_text_var = None
+        self.sort_by_var = None
+        self.sort_order_var = None
+        self.results_text_var = None
+        self.collection_name_error_var = None
+        self.following_error_var = None
+        self.save_frame_var = None
+        self.recommendation_var = None
+        self.recommended_results_var = None
+        builder.import_variables(self,
+                                 ['email_var',
+                                  'password_var',
+                                  'first_name_var',
+                                  'last_name_var',
+                                  'username_var',
+                                  'search_sort_var',
+                                  'search_text_var',
+                                  'collection_filter_text_var',
+                                  'sort_by_var',
+                                  'sort_order_var',
+                                  'results_text_var',
+                                  'collection_name_error_var',
+                                  'following_error_var',
+                                  'save_frame_var',
+                                  'recommendation_var',
+                                  'recommended_results_var'])
+
+        self.setup_ttk_styles()
+
+        main(self)
+
+        builder.connect_callbacks(self)
+
+    def run(self):
+        self.mainwindow.mainloop()
+
+    def setup_ttk_styles(self):
+        # ttk styles configuration
+        self.style = style = ttk.Style()
+        optiondb = style.master
+
+        style.theme_use("alt")
+
+        style.configure("Header.TLabel", font=HEADER["Font"][0], background=PRIMARY_COLOR[1],
+                        foreground=HEADER["Color"][0])
+        style.configure("Header1.TLabel", font=HEADER["Font"][1], background=PRIMARY_COLOR[1],
+                        foreground=HEADER["Color"][0])
+        style.configure("Header1Bk2.TLabel", font=HEADER["Font"][1], background=PRIMARY_COLOR[2],
+                        foreground=HEADER["Color"][0])
+        style.configure("Header2Bk3.TLabel", font=HEADER["Font"][2], background=PRIMARY_COLOR[2],
+                        foreground=HEADER["Color"][1])
+        style.configure("Custom_Header.TLabel", font=HEADER["Font"][2], background=PRIMARY_COLOR[1])
+        style.configure("Default_Background.TFrame", background=PRIMARY_COLOR[0])
+        style.configure("Default_Background.TNotebook", background=PRIMARY_COLOR[0])
+        style.configure("Inner_1.TFrame", background=PRIMARY_COLOR[1])
+        style.configure("Inner_2.TFrame", background=PRIMARY_COLOR[2])
+        style.configure("Inner_3.TFrame", background=PRIMARY_COLOR[3])
+        style.configure("Innter_2List.TFrame", background=PRIMARY_COLOR[2], relief="ridge")
+        style.configure("Normal_Entry.TEntry", fieldbackground=PRIMARY_COLOR[4], foreground=ENTRY_TEXT_COLOR,
+                        selectbackground=SECONDARY_BTN_COLOR)
+
+        style.configure("Main_Btn.TButton", font=HEADER["Font"][1], background=MAIN_BTN_COLOR)
+        style.configure("Secondary_Btn.TButton", background=SECONDARY_BTN_COLOR, font=HEADER["Font"][2])
+        style.configure("Secondary_Btn_MainColor.TButton", background=MAIN_BTN_COLOR, font=HEADER["Font"][2])
+
+        style.configure("TCheckbutton", background=PRIMARY_COLOR[1], font=HEADER["Font"][2],
+                        foreground=HEADER["Color"][0], indicatorcolor="black")
+        style.configure("TMenubutton", background=PRIMARY_COLOR[3], font=HEADER["Font"][2], foreground=ENTRY_TEXT_COLOR)
+        style.map("TMenubutton", background=[("active", PRIMARY_COLOR[4])])
+
+    # -------------------------------------------------- EXTERNAL SETUP -------------------------------------------------- #
+    def show_something_else(self, widget_id):
+        if widget_id == "show_sign_in":
+            self.sign_in_frame.show(False)
+        elif widget_id == "show_sign_up":
+            self.sign_up_frame.show(False)
+
+        self.si_email_cw.hide_error()
+        self.si_password_cw.hide_error()
+        self.su_email_cw.hide_error()
+        self.su_password_cw.hide_error()
+        self.first_name_cw.hide_error()
+        self.last_name_cw.hide_error()
+        self.username_cw.hide_error()
+
+    def read_book_pressed(self):
+        try:
+            e1, e2 = int(self.start_page_entry.get_text()), int(self.end_page_entry.get_text())
+            if 1 <= e1 < e2 <= self.viewing_book.pages:
+                self.page_number_error.pack_forget()
+                read_book(self.viewing_book_component.id, e1, e2)
+                self.start_page_entry.set_text(""), self.end_page_entry.set_text("")
+                return
+        except ValueError:
+            pass
+        self.page_number_error.pack(side=tkinter.LEFT)
+
+    def rate_book_pressed(self):
+        try:
+            rating = float(self.rating_text_entry.get_text())
+            if 1 <= rating <= 5:
+                self.rating_error_label.pack_forget()
+                rate_book(self.viewing_book_component.id, rating)
+                return
+        except ValueError:
+            pass
+        self.rating_error_label.pack(side=tkinter.LEFT)
+
+    def close_save_frame(self):
+        self.new_collection_lower_frame.hide()
+        self.save_collection_frame.hide()
+        self.view_user_frame.hide()
+        self.save_frame.hide()
+
+    def save_book_pressed(self):
+        self.close_save_frame()
+        self.save_frame_var.set("Save To...")
+        self.save_collection_frame.show()
+        self.new_collection_btn.show()
+        self.save_frame.show(anchor=tkinter.NW, relx=.5, rely=.5, x=-120, y=-300, width=280, height=420)
+
+    def create_new_collection_pressed(self):
+        self.new_collection_btn.hide()
+        self.new_collection_lower_frame.show()
+
+    def create_collection_pressed(self):
+        collection_name = self.collection_name_entry.get_text()
+        if len(collection_name) > 0 and collection_name != "Enter Collection name...":  # Nice
+            self.close_save_frame()
+            add_to_collection(self.viewing_book_component.id, create_collection(collection_name))
+            self.refresh_collections()
+        else:
+            self.collection_name_error_var.set(COLLECTION_ERROR_TEXT)
+
+    def back_pressed(self):
+        self.close_save_frame()
+        if self.removed_from_collection and self.viewing_collection_component is not None:
+            self.main_procedural.delete_component(self.viewing_book_component)
+            self.removed_from_collection = False
+        self.book_view_frame.hide()
+        self.main_procedural.show()
+
+    def delete_collection_pressed(self):
+        delete_collection(self.viewing_collection_component.id)
+        self.collection_checks_procedural.delete_component(
+            self.collection_checks_procedural.get_by_id(self.viewing_collection_component.id))
+        self.collection_procedural.delete_component(self.viewing_collection_component)
+        self.viewing_collection_component = None
+        self.main_procedural.hide()
+
+    def view_random_pressed(self):
+        if len(self.main_procedural.components) > 0:
+            self.view_book(random.choice(self.main_procedural.components))
+
+    def sort_books(self, _):
+        if self.viewing_collection_component is None:
+            self.search_pressed(True)
+        else:
+            self.view_collection(self.viewing_collection_component)
+
+    def follow_pressed(self):
+        follow_text = self.following_friend_entry.get_text()
+        if len(follow_text) > 0:
+            result = try_follow_user(follow_text)
+            self.following_error_var.set(FOLLOWING_ERROR_TEXTS[result])
+            if result == 0:
+                self.following_friend_entry.set_text("")
+                self.refresh_following()
 
 
 def count_total_pages(books):
@@ -576,6 +572,8 @@ def main(self: AverageReadsPygubuApp):
     self.save_collection_frame = CWidget("save_collection_frame", expand=tkinter.TRUE, fill=tkinter.BOTH)
     self.view_user_frame = CWidget("view_user_frame", expand=tkinter.TRUE, fill=tkinter.BOTH)
     self.unfollow_btn = CWidget("unfollow_btn", side=tkinter.BOTTOM, pady=10)
+    self.sort_frame = CWidget("sort_frame", expand=tkinter.TRUE, fill=tkinter.BOTH)
+    self.recommendation_frame = CWidget("recommendation_frame")
 
     self.book_search_entry = PlaceholderEntry(self.builder.get_object("book_search_entry"))
     self.collection_name_entry = PlaceholderEntry(self.builder.get_object("collection_name_entry"))
@@ -621,12 +619,10 @@ def main(self: AverageReadsPygubuApp):
     def view_book(component):
         # Set Previous Rating by the user in rating_text_entry spot
         self.viewing_book_component = component
-        book_data, genre_data, rating, author_data, publisher_data, audience_data, release_date = get_book(component.id)
-        self.viewing_book = book_data
-        self.details_lc.update_cur_texts(
-            [book_data[1], db_result_to_str(genre_data, True), book_data[2], rating,
-             db_result_to_str(author_data, True), db_result_to_str(publisher_data, True),
-             db_result_to_str(audience_data, True), release_date])
+        book = BookResults.get_book_from_id(component.id)
+        self.viewing_book = book
+        self.details_lc.update_cur_texts([book.title, book.genre, book.pages, book.rating, book.author, book.publisher,
+                                          book.audience, book.release_date])
         self.removed_from_collection = False
 
         self.rating_text_entry.set_text(get_rating_on_book(component.id))
@@ -639,28 +635,23 @@ def main(self: AverageReadsPygubuApp):
 
     def view_collection(component: ListComponent):
         self.viewing_collection_component = component
-        self.main_procedural.show()
         self.book_view_frame.hide()
+        self.recommendation_frame.hide()
+        self.main_procedural.show()
+        self.sort_frame.show()
         self.close_save_frame()
         self.collection_info_frame.show()
-        bid_title_pages_genres, authors_publisher_audience, avg_rate_release_date, cname = query_search("","",
-                                                                                                 self.sort_by_var.get(),
-                                                                                                 self.sort_order_var.get(), collection_id = component.id)
+        books, cname = BookResults.search_for("", "", self.sort_by_var.get(), self.sort_order_var.get(),
+                                              collection_id=component.id)
         self.results_text_var.set(COLLECTION_CONTENT_TEXT)
         self.collection_view_name_entry.set_text(cname)
 
         self.main_procedural.set_components([ListComponent(label_texts=BOOK_COMPONENTS, width=500,
-                                                           selected_method=view_book, identifier=bid_title_pages_genres[i][0],
-                                                           cur_texts=[bid_title_pages_genres[i][1], db_result_to_str(bid_title_pages_genres[i][3]),
-                                                                      bid_title_pages_genres[i][2], round(avg_rate_release_date[i][0], 1) if avg_rate_release_date[i][0] is not None else "N/A",
-                                                                      db_result_to_str(authors_publisher_audience[i][0]),
-                                                                      db_result_to_str(authors_publisher_audience[i][1]),
-                                                                      db_result_to_str(authors_publisher_audience[i][2]) if len(authors_publisher_audience[i]) == 3 else "N/A",
-                                                                      avg_rate_release_date[i][1]])
-                                             for
-                                             i
-                                             in
-                                             range(len(bid_title_pages_genres))])
+                                                           selected_method=view_book, identifier=book.book_id,
+                                                           cur_texts=[book.title, book.genre, book.pages, book.rating,
+                                                                      book.author, book.publisher, book.audience,
+                                                                      book.release_date])
+                                             for book in books])
 
     def toggle_book_in_collection_state(checkbox_component: CheckboxComponent):
         if checkbox_component.is_checked():
@@ -710,24 +701,22 @@ def main(self: AverageReadsPygubuApp):
         self.viewing_book = None
         self.viewing_collection_component = None
 
-        bid_title_pages_genres, authors_publisher_audience, avg_rate_release_date = query_search(search_text, search_sort, self.sort_by_var.get(), self.sort_order_var.get())
-        self.results_text_var.set(SEARCH_RESULT_TEXT + str(len(bid_title_pages_genres)))
-
-        self.main_procedural.set_components([ListComponent(label_texts=BOOK_COMPONENTS, width=500,
-                                                           selected_method=view_book, identifier=bid_title_pages_genres[i][0],
-                                                           cur_texts=[bid_title_pages_genres[i][1], db_result_to_str(bid_title_pages_genres[i][3]),
-                                                                      bid_title_pages_genres[i][2], round(avg_rate_release_date[i][0], 1) if avg_rate_release_date[i][0] is not None else "N/A",
-                                                                      db_result_to_str(authors_publisher_audience[i][0]),
-                                                                      db_result_to_str(authors_publisher_audience[i][1]),
-                                                                      db_result_to_str(authors_publisher_audience[i][2]) if len(authors_publisher_audience[i]) == 3 else "N/A",
-                                                                      avg_rate_release_date[i][1]])
-                                             for
-                                             i in range(len(bid_title_pages_genres))])
-
+        self.recommendation_frame.hide()
         self.book_view_frame.hide()
         self.collection_info_frame.hide()
         self.close_save_frame()
+        self.sort_frame.show()
         self.main_procedural.show()
+
+        books = BookResults.search_for(search_text, search_sort, self.sort_by_var.get(), self.sort_order_var.get())
+        self.results_text_var.set(SEARCH_RESULT_TEXT + str(len(books)))
+        self.main_procedural.set_components([ListComponent(label_texts=BOOK_COMPONENTS, width=500,
+                                                           selected_method=view_book, identifier=book.book_id,
+                                                           cur_texts=[book.title, book.genre, book.pages, book.rating,
+                                                                      book.author, book.publisher, book.audience,
+                                                                      book.release_date])
+                                             for book in books])
+
         self.querying = False
 
     def search_pressed(last=False, *args):
@@ -755,6 +744,7 @@ def main(self: AverageReadsPygubuApp):
         self.first_name_var.set("")
         self.last_name_var.set("")
         self.username_var.set("")
+        self.main_procedural.hide()
         self.prompt_frame.hide()
         self.main_frame.show()
 
@@ -781,7 +771,8 @@ def main(self: AverageReadsPygubuApp):
             self.save_frame_var.set("Viewing User...")
 
         self.user_details_lc.update_cur_texts(
-            [username, user_id, f_name, l_name, email, creation_date, num_collections, num_followers, num_following, top_books_to_str(books)])
+            [username, user_id, f_name, l_name, email, creation_date, num_collections, num_followers, num_following,
+             top_books_to_str(books)])
         self.view_user_frame.show()
         self.save_frame.show(anchor=tkinter.NW, relx=.5, rely=.5, x=-175, y=-350, width=350, height=450)
 
@@ -854,6 +845,22 @@ def main(self: AverageReadsPygubuApp):
             sign_in((self.si_email_cw.value(), self.si_password_cw.value(), self.first_name_cw.value(),
                      self.last_name_cw.value(), self.username_cw.value()))
 
+    def refresh_recommendations(_=None):
+        self.sort_frame.hide()
+        self.collection_info_frame.hide()
+        self.close_save_frame()
+        self.recommendation_frame.show()
+        self.main_procedural.show()
+        self.results_text_var.set("Recommended Books")
+
+        books = BookResults.get_recommended_books(get_cur_user_id(), self.recommendation_var.get())
+        self.recommended_results_var.set(SEARCH_RESULT_TEXT + str(len(books)))
+        self.main_procedural.set_components(
+            [ListComponent(label_texts=BOOK_COMPONENTS, width=500, selected_method=view_book, identifier=book.book_id,
+                           cur_texts=[book.title, book.genre, book.pages, book.rating,
+                                      book.author, book.publisher, book.audience,
+                                      book.release_date]) for book in books])
+
     self.setup_collections = refresh_collections
     self.refresh_collections = refresh_collections
     self.view_book = view_book
@@ -862,6 +869,7 @@ def main(self: AverageReadsPygubuApp):
     self.unfollow_pressed = unfollow_pressed
     self.sign_out_pressed = sign_out_pressed
     self.profile_pressed = profile_pressed
+    self.recommended_pressed = self.recommended_menu_changed = refresh_recommendations
 
     self.request_sign_in = request_sign_in
     self.request_sign_up = request_sign_up

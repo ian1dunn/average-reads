@@ -583,27 +583,48 @@
               <property name="propagate">False</property>
             </containerlayout>
             <child>
-              <object class="ttk.Button" id="button10">
-                <property name="command" type="command" cbtype="simple">sign_out_pressed</property>
-                <property name="style">Secondary_Btn_MainColor.TButton</property>
-                <property name="text" translatable="yes">Sign Out</property>
+              <object class="ttk.Frame" id="frame2">
+                <property name="height">200</property>
+                <property name="style">Inner_1.TFrame</property>
+                <property name="width">200</property>
                 <layout manager="place">
                   <property name="anchor">nw</property>
-                  <property name="relx">1.0</property>
-                  <property name="x">-95</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Button" id="button13">
-                <property name="command" type="command" cbtype="simple">profile_pressed</property>
-                <property name="style">Secondary_Btn.TButton</property>
-                <property name="text" translatable="yes">Profile</property>
-                <layout manager="place">
-                  <property name="anchor">nw</property>
-                  <property name="relx">0.0</property>
+                  <property name="height">30</property>
+                  <property name="relwidth">1.0</property>
+                  <property name="width">-60</property>
                   <property name="x">30</property>
                 </layout>
+                <child>
+                  <object class="ttk.Button" id="button10">
+                    <property name="command" type="command" cbtype="simple">sign_out_pressed</property>
+                    <property name="style">Secondary_Btn_MainColor.TButton</property>
+                    <property name="text" translatable="yes">Sign Out</property>
+                    <layout manager="pack">
+                      <property name="side">right</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Button" id="button13">
+                    <property name="command" type="command" cbtype="simple">profile_pressed</property>
+                    <property name="style">Secondary_Btn.TButton</property>
+                    <property name="text" translatable="yes">Profile</property>
+                    <layout manager="pack">
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Button" id="button9">
+                    <property name="command" type="command" cbtype="simple">recommended_pressed</property>
+                    <property name="style">Secondary_Btn.TButton</property>
+                    <property name="text" translatable="yes">Recommended</property>
+                    <layout manager="pack">
+                      <property name="padx">10</property>
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -790,50 +811,72 @@
                                       <property name="side">top</property>
                                     </layout>
                                     <child>
-                                      <object class="ttk.Label" id="label26">
-                                        <property name="style">Header1Bk2.TLabel</property>
-                                        <property name="text" translatable="yes">Sort By:</property>
-                                        <layout manager="pack">
-                                          <property name="side">left</property>
-                                        </layout>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="ttk.OptionMenu" id="book_sort_menu" named="True">
-                                        <property name="command" type="command" cbtype="simple">sort_books</property>
-                                        <property name="value">Title</property>
-                                        <property name="values">Title,Author,Publisher,Genre,Release Year</property>
-                                        <property name="variable">string:sort_by_var</property>
-                                        <layout manager="pack">
-                                          <property name="side">left</property>
-                                        </layout>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="ttk.OptionMenu" id="optionmenu2" named="True">
-                                        <property name="command" type="command" cbtype="simple">sort_books</property>
-                                        <property name="value">Ascending</property>
-                                        <property name="values">Ascending,Descending</property>
-                                        <property name="variable">string:sort_order_var</property>
-                                        <layout manager="pack">
-                                          <property name="side">right</property>
-                                        </layout>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="ttk.Label" id="label27">
-                                        <property name="style">Header1Bk2.TLabel</property>
-                                        <property name="text" translatable="yes">Sort Order:</property>
-                                        <layout manager="pack">
-                                          <property name="side">right</property>
-                                        </layout>
-                                      </object>
-                                    </child>
-                                    <child>
-                                      <object class="ttk.Frame" id="frame31">
-                                        <property name="height">30</property>
+                                      <object class="ttk.Frame" id="sort_frame" named="True">
+                                        <property name="height">200</property>
                                         <property name="style">Inner_2.TFrame</property>
-                                        <property name="width">30</property>
+                                        <property name="width">200</property>
+                                        <layout manager="pack">
+                                          <property name="expand">true</property>
+                                          <property name="fill">both</property>
+                                          <property name="side">top</property>
+                                        </layout>
+                                        <child>
+                                          <object class="ttk.Label" id="label26">
+                                            <property name="style">Header1Bk2.TLabel</property>
+                                            <property name="text" translatable="yes">Sort By:</property>
+                                            <layout manager="pack">
+                                              <property name="side">left</property>
+                                            </layout>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="ttk.OptionMenu" id="book_sort_menu" named="True">
+                                            <property name="command" type="command" cbtype="simple">sort_books</property>
+                                            <property name="value">Title</property>
+                                            <property name="values">Title,Author,Publisher,Genre,Release Year</property>
+                                            <property name="variable">string:sort_by_var</property>
+                                            <layout manager="pack">
+                                              <property name="side">left</property>
+                                            </layout>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="ttk.OptionMenu" id="optionmenu2" named="True">
+                                            <property name="command" type="command" cbtype="simple">sort_books</property>
+                                            <property name="value">Ascending</property>
+                                            <property name="values">Ascending,Descending</property>
+                                            <property name="variable">string:sort_order_var</property>
+                                            <layout manager="pack">
+                                              <property name="side">right</property>
+                                            </layout>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="ttk.Label" id="label27">
+                                            <property name="style">Header1Bk2.TLabel</property>
+                                            <property name="text" translatable="yes">Sort Order:</property>
+                                            <layout manager="pack">
+                                              <property name="side">right</property>
+                                            </layout>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="ttk.Frame" id="frame31">
+                                            <property name="height">30</property>
+                                            <property name="style">Inner_2.TFrame</property>
+                                            <property name="width">30</property>
+                                            <layout manager="pack">
+                                              <property name="side">top</property>
+                                            </layout>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="ttk.Frame" id="frame7">
+                                        <property name="height">0</property>
+                                        <property name="style">Inner_2.TFrame</property>
+                                        <property name="width">200</property>
                                         <layout manager="pack">
                                           <property name="side">top</property>
                                         </layout>
@@ -862,9 +905,10 @@
                                     <child>
                                       <object class="ttk.Label" id="label42">
                                         <property name="style">Header1Bk2.TLabel</property>
-                                        <property name="text" translatable="yes">Viewing Collection</property>
+                                        <property name="text" translatable="yes">Recommended Books</property>
                                         <property name="textvariable">string:results_text_var</property>
                                         <layout manager="pack">
+                                          <property name="padx">5</property>
                                           <property name="side">left</property>
                                         </layout>
                                       </object>
@@ -874,8 +918,12 @@
                                         <property name="height">200</property>
                                         <property name="style">Inner_2.TFrame</property>
                                         <property name="width">200</property>
-                                        <layout manager="pack">
-                                          <property name="side">left</property>
+                                        <layout manager="place">
+                                          <property name="anchor">nw</property>
+                                          <property name="height">0</property>
+                                          <property name="width">0</property>
+                                          <property name="x">0</property>
+                                          <property name="y">0</property>
                                         </layout>
                                         <child>
                                           <object class="ttk.Entry" id="collection_view_name_entry" named="True">
@@ -905,6 +953,38 @@
                                             <property name="text" translatable="yes">Delete</property>
                                             <layout manager="pack">
                                               <property name="side">right</property>
+                                            </layout>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="ttk.Frame" id="recommendation_frame" named="True">
+                                        <property name="height">200</property>
+                                        <property name="style">Inner_2.TFrame</property>
+                                        <property name="width">200</property>
+                                        <layout manager="pack">
+                                          <property name="side">top</property>
+                                        </layout>
+                                        <child>
+                                          <object class="ttk.OptionMenu" id="optionmenu1">
+                                            <property name="command" type="command" cbtype="simple">recommended_menu_changed</property>
+                                            <property name="value">Last 90 Days - Top 20</property>
+                                            <property name="values">Last 90 Days - Top 20,Top 20 Among Friends,Top 5 New Releases,For You</property>
+                                            <property name="variable">string:recommendation_var</property>
+                                            <layout manager="pack">
+                                              <property name="side">left</property>
+                                            </layout>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="ttk.Label" id="label12">
+                                            <property name="style">Header1Bk2.TLabel</property>
+                                            <property name="text" translatable="yes">Results: 20</property>
+                                            <property name="textvariable">string:recommended_results_var</property>
+                                            <layout manager="pack">
+                                              <property name="padx">5</property>
+                                              <property name="side">left</property>
                                             </layout>
                                           </object>
                                         </child>
@@ -1140,7 +1220,7 @@
                       <property name="anchor">nw</property>
                       <property name="height">450</property>
                       <property name="relx">.5</property>
-                      <property name="rely">0.5</property>
+                      <property name="rely">-5</property>
                       <property name="width">350</property>
                       <property name="x">-175</property>
                       <property name="y">-350</property>
