@@ -1,5 +1,6 @@
 import psycopg2
 from sshtunnel import SSHTunnelForwarder
+import csv
 
 class Connection:
     def __init__(self):
@@ -28,25 +29,11 @@ class Connection:
         except:
             print("Connection failed")
 
-    def Query(self, query: str, fetch_all=True, data=None) -> list[tuple] | None:
-        cur = self.connection.cursor()
-        cur.execute(query, data)
-        results = None
-        if query.startswith("SELECT") or "RETURNING" in query:
-            # Select is the only query which returns data (I think)
-            if fetch_all:
-                results = cur.fetchall()
-            else:
-                results = cur.fetchone()
-            
-            if "RETURNING" in query:
-                # If we are returning data, we need to commit our changes
-                self.connection.commit()
-        else:
-            # Made a change to the database, let's commit our changes
-            self.connection.commit()
-        cur.close()
-        return results
+    def FetchData(self):
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT * FROM rating")
+
+        return cursor.fetchall()
 
     def ConnectionClose(self):
         self.server.close()
@@ -54,13 +41,20 @@ class Connection:
         print("Closed")
 
 
-def test():
-    return [(("a",), ("b",)), (("c",), ("d",))]
-
-
 if __name__ == '__main__':
+    RAW_DATA_FILENAME = "raw_ratings_data.csv"
+
     DATABASE = Connection()
-    cursor = DATABASE.connection.cursor()
-    for i in range(10):
-        cursor.execute("SELECT * FROM users")
+    rows = DATABASE.FetchData() # Returns array of tuples
+
+    with open(RAW_DATA_FILENAME, 'w', newline='') as out:
+        csv_out=csv.writer(out)
+
+        # Write header
+        csv_out.writerow(['user_id','book_id', 'rating'])
+
+        # Write data
+        for row in rows:
+            csv_out.writerow(row)
+
     DATABASE.ConnectionClose()

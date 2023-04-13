@@ -1,1 +1,5 @@
+# Ignore secret credentials
 DataCredentials.txt
+
+# Ignore our generated CSV file
+raw_ratings_data.csv
