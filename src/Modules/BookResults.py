@@ -6,6 +6,7 @@ I like this one though. It's pretty clean.
 
 Author: Ethan Hartman
 """
+
 from enum import Enum
 
 RATING_DECIMALS = 1
@@ -15,7 +16,7 @@ POPULAR_FRIEND_QUERY = "SELECT b.book_id FROM friend INNER JOIN reading_session 
 TOP_MONTHLY_RELEASED_QUERY = "SELECT book.book_id FROM book INNER JOIN book_model ON (book.book_id = book_model.book_id) LEFT OUTER JOIN rating on (rating.book_id = book.book_id) WHERE (EXTRACT(YEAR FROM book_model.release_date) = EXTRACT(YEAR FROM CURRENT_DATE) AND EXTRACT(MONTH FROM book_model.release_date) = EXTRACT(MONTH FROM CURRENT_DATE)) GROUP BY book.book_id ORDER BY COALESCE(AVG(rating.rating), 0) DESC LIMIT 5;"
 
 # TODO: recommendation query
-RECOMMENDED_FOR_USER_QUERY = "WITH friends_books AS ( SELECT DISTINCT b.book_id, b.title, r.rating FROM friend f INNER JOIN reading_session rs ON f.followee_uid = rs.user_id INNER JOIN book b ON rs.book_id = b.book_id INNER JOIN rating r ON rs.book_id = r.book_id AND rs.user_id = r.user_id WHERE f.follower_uid = 2 AND r.rating >= 2 ), top_genres AS (     SELECT bg.genre_id, COUNT(*) as genre_count     FROM reading_session rs     INNER JOIN book_genres bg ON rs.book_id = bg.book_id     WHERE rs.user_id = 2     GROUP BY bg.genre_id     ORDER BY genre_count DESC     LIMIT 3 ), books_by_top_genres AS (     SELECT DISTINCT b.book_id, b.title     FROM book b     INNER JOIN book_genres bg ON b.book_id = bg.book_id     WHERE bg.genre_id IN (SELECT genre_id FROM top_genres) ) SELECT fb.book_id, fb.title FROM friends_books fb UNION SELECT btg.book_id, btg.title FROM books_by_top_genres btg ORDER BY book_id;"
+RECOMMENDED_FOR_USER_QUERY = "WITH friends_books AS ( SELECT DISTINCT b.book_id, b.title, r.rating FROM friend f INNER JOIN reading_session rs ON f.followee_uid = rs.user_id INNER JOIN book b ON rs.book_id = b.book_id INNER JOIN rating r ON rs.book_id = r.book_id AND rs.user_id = r.user_id WHERE f.follower_uid = {0} AND r.rating >= 2 ), top_genres AS (     SELECT bg.genre_id, COUNT(*) as genre_count     FROM reading_session rs     INNER JOIN book_genres bg ON rs.book_id = bg.book_id     WHERE rs.user_id = {0}     GROUP BY bg.genre_id     ORDER BY genre_count DESC     LIMIT 3 ), books_by_top_genres AS (     SELECT DISTINCT b.book_id, b.title     FROM book b     INNER JOIN book_genres bg ON b.book_id = bg.book_id     WHERE bg.genre_id IN (SELECT genre_id FROM top_genres) ) SELECT fb.book_id, fb.title FROM friends_books fb UNION SELECT btg.book_id, btg.title FROM books_by_top_genres btg ORDER BY book_id;"
 
 BOOK_DATA_QUERY = "SELECT book.book_id, book.title, book.pages, (SELECT array_agg(DISTINCT genre.g_name) FROM genre INNER JOIN book_genres bg on (bg.book_id = book.book_id AND genre.genre_id = bg.genre_id)), \
        (SELECT array_agg(DISTINCT contributors.c_name) FROM contributors INNER JOIN author a on (a.book_id = book.book_id AND contributors.contributor_id = a.contributor_id)), \
@@ -191,8 +192,12 @@ class BookResults:
                 query = TOP_MONTHLY_RELEASED_QUERY
             case Recommendations.FOR_YOU.value:
                 # Recommendations for the user based on their reading history
-                query = RECOMMENDED_FOR_USER_QUERY.format(uid)
+                results = get_books_from_tuple(BookResults.DATABASE, BookResults.DATABASE.Query(RECOMMENDED_FOR_USER_QUERY.format(uid), special_return=True))
+                if len(results) != 0:
+                    return results
+                else:
+                    return get_books_from_tuple(BookResults.DATABASE, BookResults.DATABASE.Query(LAST_90_DAYS_POPULAR_QUERY, special_return=True))
             case _:
                 return []
 
-        return get_books_from_tuple(BookResults.DATABASE, BookResults.DATABASE.Query(query))
+        return get_books_from_tuple(BookResults.DATABASE, BookResults.DATABASE.Query(query, special_return=True))

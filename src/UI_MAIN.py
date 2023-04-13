@@ -1,4 +1,11 @@
-#!/usr/bin/python3
+"""
+UI for Average Reads.
+Very noice spring break grind I must say.
+This code is slightly atrocious...
+
+Author: Ethan Hartman
+"""
+
 import random
 import threading
 import tkinter
@@ -428,7 +435,7 @@ class AverageReadsPygubuApp:
         style.configure("TMenubutton", background=PRIMARY_COLOR[3], font=HEADER["Font"][2], foreground=ENTRY_TEXT_COLOR)
         style.map("TMenubutton", background=[("active", PRIMARY_COLOR[4])])
 
-    # -------------------------------------------------- EXTERNAL SETUP -------------------------------------------------- #
+# -------------------------------------------------- EXTERNAL SETUP -------------------------------------------------- #
     def show_something_else(self, widget_id):
         if widget_id == "show_sign_in":
             self.sign_in_frame.show(False)

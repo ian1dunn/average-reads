@@ -248,7 +248,5 @@ def process_finished():
 if __name__ == '__main__':
     try:
         start = time.time()
-        for book in BookResults.query_recommended_for_user(204):
-            print(book.title, book.book_id)
     finally:
         DATABASE.ConnectionClose()
